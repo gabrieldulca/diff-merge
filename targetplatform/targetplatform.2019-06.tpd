@@ -1,0 +1,25 @@
+target "Eclipse 2019-06 Target" with source requirements
+
+location "http://download.eclipse.org/releases/2019-06" eclipse-platform {
+	
+	org.eclipse.equinox.p2.discovery.feature.feature.group
+	org.eclipse.equinox.executable.feature.group
+	org.eclipse.equinox.transforms.hook
+	org.eclipse.equinox.transforms.xslt
+	org.eclipse.uml2.sdk.feature.group
+	org.eclipse.uml2.uml.resources
+	}
+
+location "http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/" emfCompare {
+	org.eclipse.emf.compare.diagram.gmf.feature.group
+	org.eclipse.emf.compare.uml2.feature.group
+	org.eclipse.emf.compare.egit.feature.group
+	org.eclipse.emf.compare.ide.ui.feature.group
+	org.eclipse.emf.compare.rcp.ui.feature.group
+	org.eclipse.emf.compare.diagram
+	org.eclipse.emf.compare.edit
+	org.eclipse.emf.compare
+	
+	
+}
+

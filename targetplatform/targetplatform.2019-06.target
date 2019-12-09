@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
+<target name="Eclipse 2019-06 Target" sequenceNumber="1575899381">
+  <locations>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.2.200.v20190129-1112"/>
+      <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.400.v20190515-0925"/>
+      <unit id="org.eclipse.equinox.transforms.hook" version="1.2.400.v20190516-1504"/>
+      <unit id="org.eclipse.equinox.transforms.xslt" version="1.1.0.v20190514-1046"/>
+      <unit id="org.eclipse.uml2.sdk.feature.group" version="5.5.0.v20181203-1331"/>
+      <unit id="org.eclipse.uml2.uml.resources" version="5.5.0.v20181203-1331"/>
+      <repository id="eclipse-platform" location="http://download.eclipse.org/releases/2019-06"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.emf.compare.diagram.gmf.feature.group" version="3.3.8.201909101346"/>
+      <unit id="org.eclipse.emf.compare.uml2.feature.group" version="3.3.8.201909101346"/>
+      <unit id="org.eclipse.emf.compare.egit.feature.group" version="3.3.8.201909101346"/>
+      <unit id="org.eclipse.emf.compare.ide.ui.feature.group" version="3.3.8.201909101346"/>
+      <unit id="org.eclipse.emf.compare.rcp.ui.feature.group" version="3.3.8.201909101346"/>
+      <unit id="org.eclipse.emf.compare.diagram" version="2.5.2.201909101346"/>
+      <unit id="org.eclipse.emf.compare.edit" version="4.3.1.201909101346"/>
+      <unit id="org.eclipse.emf.compare" version="3.5.3.201909101346"/>
+      <repository id="emfCompare" location="http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/"/>
+    </location>
+  </locations>
+</target>
