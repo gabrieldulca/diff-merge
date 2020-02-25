@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
-<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Eclipse 2019-06 Target" sequenceNumber="1575899381">
+<!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl --><target name="Eclipse 2019-06 Target" sequenceNumber="1575899381">
   <locations>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.2.200.v20190129-1112"/>
-      <unit id="org.eclipse.equinox.executable.feature.group" version="3.8.400.v20190515-0925"/>
-      <unit id="org.eclipse.equinox.transforms.hook" version="1.2.400.v20190516-1504"/>
-      <unit id="org.eclipse.equinox.transforms.xslt" version="1.1.0.v20190514-1046"/>
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.uml2.sdk.feature.group" version="5.5.0.v20181203-1331"/>
-      <unit id="org.eclipse.uml2.uml.resources" version="5.5.0.v20181203-1331"/>
       <repository id="eclipse-platform" location="http://download.eclipse.org/releases/2019-06"/>
+	    <unit id="org.eclipse.jst.ws.jaxws.feature.feature.group" version="1.2.500.v201903021515"/>
+	    <unit id="org.eclipse.jst.web_ui.feature.feature.group" version="3.12.0.v201903222115"/>
     </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+    <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
       <unit id="org.eclipse.emf.compare.diagram.gmf.feature.group" version="3.3.8.201909101346"/>
       <unit id="org.eclipse.emf.compare.uml2.feature.group" version="3.3.8.201909101346"/>
       <unit id="org.eclipse.emf.compare.egit.feature.group" version="3.3.8.201909101346"/>
@@ -23,5 +19,29 @@
       <unit id="org.eclipse.emf.compare" version="3.5.3.201909101346"/>
       <repository id="emfCompare" location="http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/"/>
     </location>
+	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+		  <repository location="https://hstaudacher.github.io/osgi-jax-rs-connector"/>
+		  <unit id="com.eclipsesource.jaxrs.connector.feature.feature.group" version="5.3.1.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.connector.feature.source.feature.group" version="5.3.1.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.gson.feature.feature.group" version="2.3.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.gson.feature.source.feature.group" version="2.3.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.moxy.feature.source.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.multipart.feature.source.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.security.feature.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.security.feature.source.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.sse.feature.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.sse.feature.source.feature.group" version="2.2.0.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.feature.group" version="1.1.1.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.provider.swagger.feature.source.feature.group" version="1.1.1.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.feature.group" version="2.22.1.201602281253"/>
+		  <unit id="com.eclipsesource.jaxrs.jersey.runtime.feature.source.feature.group" version="2.22.1.201602281253"/>
+	  </location>
+	  <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+		  <repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.14.v20181113"/>
+		  <unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.14.v20181113"/>
+		  <unit id="org.eclipse.jetty.bundles.f.source.feature.group" version="9.4.14.v20181113"/>
+	  </location>
   </locations>
 </target>
