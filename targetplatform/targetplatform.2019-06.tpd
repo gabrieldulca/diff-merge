@@ -1,6 +1,6 @@
 target "Eclipse 2019-06 Target" with source requirements
 
-location "http://download.eclipse.org/releases/2019-06" eclipse-platform {
+location "http://download.eclipse.org/releases/2019-09" eclipse-platform {
 	
 	org.eclipse.equinox.p2.discovery.feature.feature.group
 	org.eclipse.equinox.executable.feature.group
@@ -8,7 +8,17 @@ location "http://download.eclipse.org/releases/2019-06" eclipse-platform {
 	org.eclipse.equinox.transforms.xslt
 	org.eclipse.uml2.sdk.feature.group
 	org.eclipse.uml2.uml.resources
+	javax.annotation
+	javax.xml.bind
+	javax.xml
+	javax.servlet
+	javax.activation
+	com.google.guava
+	org.eclipse.core.runtime
 	}
+
+
+
 
 location "http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/" emfCompare {
 	org.eclipse.emf.compare.diagram.gmf.feature.group
@@ -22,4 +32,20 @@ location "http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/
 	
 	
 }
+
+location "https://hstaudacher.github.io/osgi-jax-rs-connector" jetty {
+	com.eclipsesource.jaxrs.jersey-all
+}
+
+location "https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.15.v20190215" jetty2 {
+	org.eclipse.jetty.io
+	org.eclipse.jetty.security
+	org.eclipse.jetty.util
+	org.eclipse.jetty.server
+	org.eclipse.jetty.servlet
+	org.eclipse.jetty.http
+
+
+}
+
 
