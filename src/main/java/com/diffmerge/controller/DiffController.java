@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
+import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.service.DiffService;
 
 
@@ -40,7 +41,7 @@ public class DiffController {
 	    @GET
 	    @Path("compare")
 	    @Produces(MediaType.APPLICATION_JSON)
-	    public Comparison testComp() {
+	    public ComparisonDto testComp() {
 	    	DiffService diffService = new DiffService();
 	    	
 	        return diffService.sendComparison();

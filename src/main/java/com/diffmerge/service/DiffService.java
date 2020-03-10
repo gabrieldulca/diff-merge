@@ -22,6 +22,8 @@ import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
+import main.java.com.diffmerge.dto.DiffDto;
+import main.java.com.diffmerge.mapper.DiffMapper;
 
 public class DiffService {
 
@@ -43,22 +45,18 @@ public class DiffService {
 		return new ComparisonDto();
 	}
 	
-	public Comparison sendComparison() {
+	public ComparisonDto sendComparison() {
 		String xmi1 = "src/main/resources/My.uml";
 		String xmi2 = "src/main/resources/My2.uml";
 		Comparison comparison = compare(xmi1, xmi2);
-		
-		
-		System.out.println(comparison);
 
 		List<Diff> diffList = comparison.getDifferences();
-		
+		ComparisonDto comparisonDto = new ComparisonDto();
 		for(Diff diff:diffList) {
-			System.out.println(diff);
+			DiffDto diffDto = DiffMapper.toDiffDto(diff);
+			comparisonDto.addDifference(diffDto);
 		}
-		
-		// TODO Auto-generated method stub
-		return comparison;
+		return comparisonDto;
 	}
 	
 	public static Comparison compare(String xmi1, String xmi2) {

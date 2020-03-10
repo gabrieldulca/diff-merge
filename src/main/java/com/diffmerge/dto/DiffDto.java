@@ -10,7 +10,17 @@ public class DiffDto {
 	
 	public List<DiffDto> children;
 	
+	public KindDto kind;
+	
 	public DiffDto() {}
+
+	public KindDto getKind() {
+		return kind;
+	}
+
+	public void setKind(KindDto kind) {
+		this.kind = kind;
+	}
 
 	public TypeDto getType() {
 		return type;
