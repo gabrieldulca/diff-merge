@@ -18,26 +18,28 @@ import main.java.com.diffmerge.dto.form.FormDiffDto;
 public class FormDiffMapper extends DiffMapper {
 	
 	public FormDiffDto toDiffDto(Diff difference) {
-		FormDiffDto diffDto = new FormDiffDto();
+		FormDiffDto diffDto = null;
 		if(difference instanceof ReferenceChange) {
-			diffDto.setType( TypeDto.REFERENCECHANGE);
+			
 			if(((ReferenceChange) difference).getValue() instanceof Property) {
+				diffDto = new FormDiffDto();
+				diffDto.setType( TypeDto.REFERENCECHANGE);
 				Property dprop = (Property) ((ReferenceChange) difference).getValue();
 				diffDto.setValue(dprop.getName());
 				diffDto.setReferenceType(ReferenceTypeDto.PROPERTY);
-			} else if(((ReferenceChange) difference).getValue() instanceof Class) {
-				Class dclass = (Class) ((ReferenceChange) difference).getValue();
-				diffDto.setValue(dclass.getName());
-				diffDto.setReferenceType(ReferenceTypeDto.CLASS);
+				DifferenceKind kind = difference.getKind();
+				diffDto.setKind(KindDto.valueOf(kind.getName()));
 			}
 		} else if(difference instanceof AttributeChange) {
+			diffDto = new FormDiffDto();
 			String value = (String) ((AttributeChange) difference).getValue();
 			String name = (String) ((AttributeChange) difference).getAttribute().getName();
 			diffDto.setType(TypeDto.ATTRIBUTECHANGE);
 			diffDto.setAttribute(new AttributeDto(name, value));
+			DifferenceKind kind = difference.getKind();
+			diffDto.setKind(KindDto.valueOf(kind.getName()));
 		}
-		DifferenceKind kind = difference.getKind();
-		diffDto.setKind(KindDto.valueOf(kind.getName()));
+	
 		
 		return diffDto;
 	}

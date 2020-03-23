@@ -51,7 +51,9 @@ public class DiffService {
 		
 		for(Diff diff:diffList) {
 			DiffDto diffDto = mapper.toDiffDto(diff);
-			comparisonDto.addDifference(diffDto);
+			if(diffDto != null) {
+				comparisonDto.addDifference(diffDto);
+			}
 		}
 		return comparisonDto;
 	}

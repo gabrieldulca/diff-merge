@@ -7,9 +7,7 @@ public class DiffDto {
 	public TypeDto type;
 	
 	public String value;
-	
-	public List<DiffDto> children;
-	
+		
 	public KindDto kind;
 	
 	public DiffDto() {}
@@ -37,15 +35,6 @@ public class DiffDto {
 	public void setValue(String value) {
 		this.value = value;
 	}
-
-	public List<DiffDto> getChildren() {
-		return children;
-	}
-
-	public void setChildren(List<DiffDto> children) {
-		this.children = children;
-	}
-	
 	
 
 }
