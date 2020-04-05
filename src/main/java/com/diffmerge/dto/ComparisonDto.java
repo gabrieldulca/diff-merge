@@ -6,6 +6,15 @@ import java.util.List;
 public class ComparisonDto {
 	
 	private List<MatchDto> matches;
+	private boolean threeWay;
+
+	public boolean isThreeWay() {
+		return threeWay;
+	}
+
+	public void setThreeWay(boolean threeWay) {
+		this.threeWay = threeWay;
+	}
 	
 	public ComparisonDto() {
 		matches = new ArrayList();

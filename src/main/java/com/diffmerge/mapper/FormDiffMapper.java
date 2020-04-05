@@ -5,12 +5,14 @@ import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.DifferenceKind;
 import org.eclipse.emf.compare.ReferenceChange;
 import org.eclipse.emf.compare.ResourceAttachmentChange;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Class;
 
 import main.java.com.diffmerge.dto.AttributeDto;
 import main.java.com.diffmerge.dto.DiffDto;
 import main.java.com.diffmerge.dto.KindDto;
+import main.java.com.diffmerge.dto.ModelElementDto;
 import main.java.com.diffmerge.dto.ReferenceTypeDto;
 import main.java.com.diffmerge.dto.TypeDto;
 import main.java.com.diffmerge.dto.form.FormDiffDto;
@@ -42,5 +44,15 @@ public class FormDiffMapper extends DiffMapper {
 	
 		
 		return diffDto;
+	}
+	
+	@Override
+	public ModelElementDto toModelElementDto(EObject modelElement) {
+		ModelElementDto modelElementDto = new ModelElementDto();
+		if(modelElement instanceof Class) {
+			Class mclass = (Class) modelElement;
+			modelElementDto.setName(mclass.getName());
+		}
+		return modelElementDto;
 	}
 }

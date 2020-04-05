@@ -2,11 +2,13 @@ package main.java.com.diffmerge.dto;
 
 public class DiffDto {
 
-	public TypeDto type;
+	private TypeDto type;
 
-	public String value;
+	private String value;
 
-	public KindDto kind;
+	private KindDto kind;
+	
+	private ConflictDto conflict;
 
 	public DiffDto() {
 	}
@@ -34,5 +36,15 @@ public class DiffDto {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public ConflictDto getConflict() {
+		return conflict;
+	}
+
+	public void setConflict(ConflictDto conflict) {
+		this.conflict = conflict;
+	}
+	
+	
 
 }

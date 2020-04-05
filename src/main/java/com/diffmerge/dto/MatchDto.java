@@ -3,11 +3,9 @@ package main.java.com.diffmerge.dto;
 import java.util.List;
 
 public class MatchDto {
-	
-	private boolean threeWay;
-	
+		
 	// sub matches
-	private List<MatchDto> subDiffs;
+	private List<MatchDto> subMatches;
 	
 	private ModelElementDto left;
 	
@@ -18,22 +16,6 @@ public class MatchDto {
 	private List<DiffDto> diffs;
 	
 	public MatchDto() {}
-
-	public boolean isThreeWay() {
-		return threeWay;
-	}
-
-	public void setThreeWay(boolean threeWay) {
-		this.threeWay = threeWay;
-	}
-
-	public List<MatchDto> getSubDiffs() {
-		return subDiffs;
-	}
-
-	public void setSubDiffs(List<MatchDto> subDiffs) {
-		this.subDiffs = subDiffs;
-	}
 
 	public ModelElementDto getLeft() {
 		return left;
@@ -57,6 +39,22 @@ public class MatchDto {
 
 	public void setOrigin(ModelElementDto origin) {
 		this.origin = origin;
+	}
+
+	public List<MatchDto> getSubMatches() {
+		return subMatches;
+	}
+
+	public void setSubMatches(List<MatchDto> subMatches) {
+		this.subMatches = subMatches;
+	}
+
+	public List<DiffDto> getDiffs() {
+		return diffs;
+	}
+
+	public void setDiffs(List<DiffDto> diffs) {
+		this.diffs = diffs;
 	}
 
 	

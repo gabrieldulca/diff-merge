@@ -1,13 +1,16 @@
 package main.java.com.diffmerge.provider.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
+import org.eclipse.emf.compare.Match;
 import org.eclipse.glsp.graph.GModelRoot;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.dto.DiffDto;
+import main.java.com.diffmerge.dto.MatchDto;
 import main.java.com.diffmerge.exception.InvalidParametersException;
 import main.java.com.diffmerge.mapper.FormDiffMapper;
 import main.java.com.diffmerge.mapper.DiffMapper;
@@ -24,18 +27,59 @@ public class FormDiffComponent extends DiffComponent{
 				
 		Comparison comparison = compare(model1, model2, model3);
 
-		List<Diff> diffList = comparison.getDifferences();
+		
 		ComparisonDto comparisonDto = new ComparisonDto();
 		
-		DiffMapper mapper = new FormDiffMapper();
+		List<Match> matchList = comparison.getMatches();
+		List<MatchDto> matchDtoList = new ArrayList<MatchDto>();
 		
+		comparisonDto.setThreeWay(comparison.isThreeWay());
+		for(Match match:matchList) {
+			matchDtoList.add(mapMatch(match, comparison.isThreeWay()));
+		}
+		
+		comparisonDto.setMatches(matchDtoList);
+		return comparisonDto;
+		
+	}
+	
+	public List<DiffDto> getCurrentDiffs(Match match) {
+		List<Diff> diffList = match.getDifferences();
+		List<DiffDto> diffDtoList = new ArrayList<DiffDto>();
 		for(Diff diff:diffList) {
-			DiffDto diffDto = mapper.toDiffDto(diff);
+			DiffDto diffDto = getMapper().toDiffDto(diff);
 			if(diffDto != null) {
-				comparisonDto.addDifference(diffDto);
+				diffDtoList.add(diffDto);
 			}
 		}
-		return comparisonDto;
+		return diffDtoList;
+		
+	}
+	
+	public List<MatchDto> getCurrentSubMatches(Match match, boolean threeWay) {
+		List<Match> subMatchList = match.getSubmatches();
+		List<MatchDto> subMatchDtoList = new ArrayList<MatchDto>();
+		for(Match subMatch:subMatchList) {
+			MatchDto subMatchDto = mapMatch(subMatch, threeWay);
+			if(subMatchDto != null) {
+				subMatchDtoList.add(subMatchDto);
+			}
+		}
+		return subMatchDtoList;
+		
+	}
+	
+	public MatchDto mapMatch(Match match, boolean threeWay) {
+		MatchDto matchDto = new MatchDto();
+		matchDto.setLeft(getMapper().toModelElementDto(match.getLeft()));
+		matchDto.setLeft(getMapper().toModelElementDto(match.getRight()));
+		if(threeWay) {
+			matchDto.setLeft(getMapper().toModelElementDto(match.getOrigin()));
+		}
+		matchDto.setDiffs(getCurrentDiffs(match));
+		matchDto.setSubMatches(getCurrentSubMatches(match, threeWay));
+		
+		return matchDto;
 		
 	}
 

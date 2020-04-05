@@ -52,7 +52,7 @@ public class DiffService {
 		for(Diff diff:diffList) {
 			DiffDto diffDto = mapper.toDiffDto(diff);
 			if(diffDto != null) {
-				comparisonDto.addDifference(diffDto);
+				//comparisonDto.addDifference(diffDto);
 			}
 		}
 		return comparisonDto;

@@ -35,7 +35,7 @@ public class DiffController {
 	    	
 	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
 	    	
-	        return diffManagerService.getDiff(example1, example2, null, type);
+	        return diffManagerService.getDiff(example2, example1, null, type);
 	    }
 
 	    @GET

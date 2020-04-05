@@ -24,10 +24,12 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.exception.InvalidParametersException;
+import main.java.com.diffmerge.mapper.DiffMapper;
 
 public abstract class DiffComponent {
 	
 	private String type;
+	private DiffMapper mapper;
 	
 	public abstract ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException;
 	
@@ -43,6 +45,14 @@ public abstract class DiffComponent {
 		this.type = type;
 	}
 	
+	public DiffMapper getMapper() {
+		return mapper;
+	}
+
+	public void setMapper(DiffMapper mapper) {
+		this.mapper = mapper;
+	}
+
 	protected Comparison compare(String model1, String model2, String model3) throws InvalidParametersException {
 
 		if(model1 == null || model2 == null) {
