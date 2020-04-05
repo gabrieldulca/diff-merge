@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/Classtypes/src" modelPluginID="Classtypes" modelName="Classtypes"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>classtypes.ecore</foreignModel>
+  <genPackages prefix="Classtypes" disposableProviderFactory="true" ecorePackage="classtypes.ecore#/">
+    <nestedGenPackages prefix="NewPackage1" disposableProviderFactory="true" ecorePackage="classtypes.ecore#//Package">
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="classtypes.ecore#//Package/Enum">
+        <genEnumLiterals ecoreEnumLiteral="classtypes.ecore#//Package/Enum/LITERAL0"/>
+        <genEnumLiterals ecoreEnumLiteral="classtypes.ecore#//Package/Enum/LITERAL1"/>
+        <genEnumLiterals ecoreEnumLiteral="classtypes.ecore#//Package/Enum/LITERAL2"/>
+      </genEnums>
+      <genClasses image="false" ecoreClass="classtypes.ecore#//Package/AbstractClass">
+        <genOperations ecoreOperation="classtypes.ecore#//Package/AbstractClass/computeResult1">
+          <genParameters ecoreParameter="classtypes.ecore#//Package/AbstractClass/computeResult1/x"/>
+        </genOperations>
+        <genOperations ecoreOperation="classtypes.ecore#//Package/AbstractClass/computeResult2">
+          <genParameters ecoreParameter="classtypes.ecore#//Package/AbstractClass/computeResult2/param"/>
+        </genOperations>
+        <genOperations ecoreOperation="classtypes.ecore#//Package/AbstractClass/doNothing"/>
+      </genClasses>
+      <genClasses ecoreClass="classtypes.ecore#//Package/A">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute classtypes.ecore#//Package/A/type"/>
+        <genOperations ecoreOperation="classtypes.ecore#//Package/A/computeResult1">
+          <genParameters ecoreParameter="classtypes.ecore#//Package/A/computeResult1/x"/>
+        </genOperations>
+      </genClasses>
+      <genClasses ecoreClass="classtypes.ecore#//Package/B1">
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute classtypes.ecore#//Package/B1/name"/>
+        <genOperations ecoreOperation="classtypes.ecore#//Package/B1/doNothing"/>
+      </genClasses>
+    </nestedGenPackages>
+  </genPackages>
+</genmodel:GenModel>

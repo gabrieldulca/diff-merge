@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Tz7HIPPnEemQD4amkR9zgQ">
+  <packagedElement xmi:type="uml:Class" xmi:id="_WWl4MPPnEemQD4amkR9zgQ" name="Superclass">
+    <ownedAttribute xmi:id="_amtCgPPnEemQD4amkR9zgQ" name="SuperclassProp"/>
+    <ownedAttribute xmi:id="_9IF00Ha-EeqmUqZmUCI8RA" name="SuperclassProp2"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_cEXTUPPnEemQD4amkR9zgQ" name="Subclass1">
+    <generalization xmi:id="_RKfBkHa-EeqmUqZmUCI8RA" general="_WWl4MPPnEemQD4amkR9zgQ"/>
+    <ownedAttribute xmi:id="_cEXTUfPnEemQD4amkR9zgQ" name="Subclass1Prop"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_D7MVwHa-EeqmUqZmUCI8RA" name="SubSubclass">
+    <generalization xmi:id="_VtZzIHa-EeqmUqZmUCI8RA" general="_t8_joHa-EeqmUqZmUCI8RA"/>
+    <ownedAttribute xmi:id="_OATkkHa-EeqmUqZmUCI8RA" name="SubSubclassProp"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_t8_joHa-EeqmUqZmUCI8RA" name="Subclass3">
+    <generalization xmi:id="_1kA_YHa-EeqmUqZmUCI8RA" general="_WWl4MPPnEemQD4amkR9zgQ"/>
+  </packagedElement>
+</uml:Model>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/Reference/src" modelPluginID="Reference" modelName="Reference"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>reference.ecore</foreignModel>
+  <genPackages prefix="Reference" disposableProviderFactory="true" ecorePackage="reference.ecore#/">
+    <genClasses ecoreClass="reference.ecore#//A">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//A/b"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//A/x"/>
+    </genClasses>
+    <genClasses ecoreClass="reference.ecore#//B">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//B/c"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//B/b1"/>
+    </genClasses>
+    <genClasses ecoreClass="reference.ecore#//C"/>
+    <genClasses ecoreClass="reference.ecore#//X">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//X/a"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//X/y"/>
+    </genClasses>
+    <genClasses ecoreClass="reference.ecore#//Y">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reference.ecore#//Y/x"/>
+    </genClasses>
+    <genClasses ecoreClass="reference.ecore#//B1"/>
+  </genPackages>
+</genmodel:GenModel>

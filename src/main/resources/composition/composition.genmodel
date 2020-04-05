@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/Composition/src" modelPluginID="Composition" modelName="Composition"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>composition.ecore</foreignModel>
+  <genPackages prefix="Composition" disposableProviderFactory="true" ecorePackage="composition.ecore#/">
+    <genClasses ecoreClass="composition.ecore#//MainClass">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainClass/mainpart2"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainClass/mainpart3"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainPart2/mainpart1"/>
+    </genClasses>
+    <genClasses ecoreClass="composition.ecore#//MainPart1">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainPart2/part1part"/>
+    </genClasses>
+    <genClasses ecoreClass="composition.ecore#//MainPart2">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainPart2/part1part"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainPart2/mainpart1"/>
+    </genClasses>
+    <genClasses ecoreClass="composition.ecore#//MainPart3">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference composition.ecore#//MainPart3/part3part"/>
+    </genClasses>
+    <genClasses ecoreClass="composition.ecore#//Part1Part"/>
+    <genClasses ecoreClass="composition.ecore#//Part3Part"/>
+  </genPackages>
+</genmodel:GenModel>

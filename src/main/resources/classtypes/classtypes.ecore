@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="classtypes" nsURI="http://www.example.org/classtypes" nsPrefix="classtypes">
+  <eSubpackages name="Package">
+    <eClassifiers xsi:type="ecore:EClass" name="AbstractClass" abstract="true">
+      <eOperations name="computeResult1"/>
+      <eOperations name="computeResult2">
+        <eParameters name="param" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="Enum">
+      <eLiterals name="LITERAL0"/>
+      <eLiterals name="LITERAL1" value="1"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="A" eSuperTypes="#//Package/AbstractClass">
+      <eOperations name="computeResult1"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="B" eSuperTypes="#//Package/AbstractClass">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+  </eSubpackages>
+</ecore:EPackage>
