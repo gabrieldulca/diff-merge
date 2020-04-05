@@ -27,6 +27,12 @@ import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
 import org.eclipse.uml2.uml.util.UMLUtil;
 
 import main.java.com.diffmerge.controller.DiffController;
+import main.java.com.diffmerge.provider.impl.DiagramDiffComponent;
+import main.java.com.diffmerge.provider.impl.FormDiffComponent;
+import main.java.com.diffmerge.provider.impl.TableDiffComponent;
+import main.java.com.diffmerge.provider.impl.TreeDiffComponent;
+import main.java.com.diffmerge.service.DiffManagerService;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -35,6 +41,12 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+    	diffManagerService.register(new DiagramDiffComponent());
+    	diffManagerService.register(new FormDiffComponent());
+    	diffManagerService.register(new TableDiffComponent());
+    	diffManagerService.register(new TreeDiffComponent());
 		
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");

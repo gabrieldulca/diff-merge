@@ -17,7 +17,9 @@ location "http://download.eclipse.org/releases/2019-09" eclipse-platform {
 	org.eclipse.core.runtime
 	}
 
-
+location "https://download.eclipse.org/glsp/server/p2/nightly/0.8/0.8.0.202002201600/" glsp {
+	org.eclipse.glsp.graph
+}
 
 
 location "http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/" emfCompare {

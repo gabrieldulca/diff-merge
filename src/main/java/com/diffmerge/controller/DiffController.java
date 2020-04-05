@@ -1,35 +1,21 @@
 package main.java.com.diffmerge.controller;
+import java.util.Collections;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.compare.Comparison;
-import org.eclipse.emf.compare.EMFCompare;
-import org.eclipse.emf.compare.match.DefaultComparisonFactory;
-import org.eclipse.emf.compare.match.DefaultEqualityHelperFactory;
-import org.eclipse.emf.compare.match.DefaultMatchEngine;
-import org.eclipse.emf.compare.match.IComparisonFactory;
-import org.eclipse.emf.compare.match.IMatchEngine;
-import org.eclipse.emf.compare.match.eobject.IEObjectMatcher;
-import org.eclipse.emf.compare.match.impl.MatchEngineFactoryImpl;
-import org.eclipse.emf.compare.match.impl.MatchEngineFactoryRegistryImpl;
-import org.eclipse.emf.compare.scope.IComparisonScope;
-import org.eclipse.emf.compare.utils.UseIdentifiers;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
-import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
-import org.glassfish.jersey.server.model.ParamQualifier;
-
 import main.java.com.diffmerge.dto.ComparisonDto;
+import main.java.com.diffmerge.service.DiffManagerService;
 import main.java.com.diffmerge.service.DiffService;
 
 
 @Path("/diff")
 public class DiffController {
+	
+	    private static final String RESOURCE_PATH = "src/main/resources/";
 
 	    @GET
 	    @Path("compare/{representation}")
@@ -39,6 +25,29 @@ public class DiffController {
 	    	
 	        return diffService.sendComparison(representation);
 	    }
+	    
+	    @GET
+	    @Path("compare/{type}/{example}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getDiff(@PathParam("type") String type, @PathParam("example") String example) throws Exception {
+	    	String example1 = RESOURCE_PATH + example + "/" + example + ".ecore";
+	    	String example2 = RESOURCE_PATH + example + "/changes/" + example + ".ecore";
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getDiff(example1, example2, null, type);
+	    }
 
+	    @GET
+	    @Path("comparewf/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getDiffWf(@PathParam("type") String type) throws Exception {
+	    	String example1 = RESOURCE_PATH + "example1.wf";
+	    	String example2 = RESOURCE_PATH + "example2.wf";;
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getDiff(example1, example2, null, type);
+	    }
 	
 }

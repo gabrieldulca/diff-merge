@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/eclipse-cbi/targetplatform-dsl -->
-<target name="Eclipse 2019-06 Target" sequenceNumber="1583671069">
+<target name="Eclipse 2019-06 Target" sequenceNumber="1586091317">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.2.300.v20190716-0825"/>
@@ -18,6 +18,10 @@
       <unit id="com.google.guava" version="27.1.0.v20190517-1946"/>
       <unit id="org.eclipse.core.runtime" version="3.16.0.v20190823-1314"/>
       <repository id="eclipse-platform" location="http://download.eclipse.org/releases/2019-09"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.glsp.graph" version="0.8.0.202002201600"/>
+      <repository id="glsp" location="https://download.eclipse.org/glsp/server/p2/nightly/0.8/0.8.0.202002201600/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.emf.compare.diagram.gmf.feature.group" version="3.3.9.201911051515"/>

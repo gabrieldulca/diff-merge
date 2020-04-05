@@ -41,7 +41,7 @@ public class DiagramDiffMapper extends DiffMapper {
 				diffDto.setReferenceType(ReferenceTypeDto.CLASS);
 			}
 		} else if(difference instanceof AttributeChange) {
-			String value = (String) ((AttributeChange) difference).getValue();
+			String value = (String) ((AttributeChange) difference).getValue().toString();
 			String name = (String) ((AttributeChange) difference).getAttribute().getName();
 			diffDto.setType(TypeDto.ATTRIBUTECHANGE);
 			diffDto.setAttribute(new AttributeDto(name, value));
