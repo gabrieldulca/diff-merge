@@ -1,16 +1,15 @@
 package main.java.com.diffmerge.dto;
 
-import java.util.List;
-
 public class DiffDto {
-	
+
 	public TypeDto type;
-	
+
 	public String value;
-		
+
 	public KindDto kind;
-	
-	public DiffDto() {}
+
+	public DiffDto() {
+	}
 
 	public KindDto getKind() {
 		return kind;
@@ -35,6 +34,5 @@ public class DiffDto {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
 
 }

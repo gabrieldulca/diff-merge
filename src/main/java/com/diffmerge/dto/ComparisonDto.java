@@ -5,22 +5,20 @@ import java.util.List;
 
 public class ComparisonDto {
 	
-	private List<DiffDto> differences;
+	private List<MatchDto> matches;
 	
 	public ComparisonDto() {
-		differences = new ArrayList();
+		matches = new ArrayList();
 	}
 
-	public List<DiffDto> getDifferencess() {
-		return differences;
+	public List<MatchDto> getMatches() {
+		return matches;
 	}
 
-	public void setDifferences(List<DiffDto> differences) {
-		this.differences = differences;
+	public void setMatches(List<MatchDto> matches) {
+		this.matches = matches;
 	}
+
 	
-	public void addDifference(DiffDto difference) {
-		differences.add(difference);
-	}
 	
 }
