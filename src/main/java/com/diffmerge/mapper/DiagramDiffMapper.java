@@ -5,9 +5,15 @@ import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.DifferenceKind;
 import org.eclipse.emf.compare.ReferenceChange;
 import org.eclipse.emf.compare.ResourceAttachmentChange;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Class;
 
@@ -15,6 +21,7 @@ import main.java.com.diffmerge.dto.AttributeDto;
 import main.java.com.diffmerge.dto.DiffDto;
 import main.java.com.diffmerge.dto.KindDto;
 import main.java.com.diffmerge.dto.ModelElementDto;
+import main.java.com.diffmerge.dto.ReferenceDto;
 import main.java.com.diffmerge.dto.ReferenceTypeDto;
 import main.java.com.diffmerge.dto.TypeDto;
 import main.java.com.diffmerge.dto.diagram.DiagramDiffDto;
@@ -42,7 +49,62 @@ public class DiagramDiffMapper extends DiffMapper {
 				DiagramDiffDto parent = new DiagramDiffDto();
 				parent.setValue(dclass.getName());
 				diffDto.setParent(parent);
+				ReferenceDto referenceDto = new ReferenceDto();
+				referenceDto.setName(((ReferenceChange) difference).getReference().getName());
+				referenceDto.setLowerBound(((ReferenceChange) difference).getReference().getLowerBound());
+				referenceDto.setUpperBound(((ReferenceChange) difference).getReference().getUpperBound());
+				diffDto.setReferenceDto(referenceDto);
 				diffDto.setReferenceType(ReferenceTypeDto.CLASS);
+			} else if(((ReferenceChange) difference).getValue() instanceof EReference) {
+				EReference dreference = (EReference) ((ReferenceChange) difference).getValue();
+				DiagramDiffDto parent = new DiagramDiffDto();
+				parent.setValue(dreference.getName());
+				diffDto.setParent(parent);
+				ReferenceDto referenceDto = new ReferenceDto();
+				referenceDto.setName(dreference.getName());
+				referenceDto.setLowerBound(dreference.getLowerBound());
+				referenceDto.setUpperBound(dreference.getUpperBound());
+				diffDto.setReferenceDto(referenceDto);
+				diffDto.setReferenceType(ReferenceTypeDto.REFERENCE);
+			} else if(((ReferenceChange) difference).getValue() instanceof EEnumLiteral) {
+				EEnumLiteral denum = (EEnumLiteral) ((ReferenceChange) difference).getValue();
+				DiagramDiffDto parent = new DiagramDiffDto();
+				parent.setValue(denum.getName());
+				diffDto.setParent(parent);
+				diffDto.setReferenceType(ReferenceTypeDto.ENUM);
+			} else if(((ReferenceChange) difference).getValue() instanceof EAttribute) {
+				EAttribute dattr = (EAttribute) ((ReferenceChange) difference).getValue();
+				DiagramDiffDto parent = new DiagramDiffDto();
+				parent.setValue(dattr.getName());
+				diffDto.setParent(parent);
+				ReferenceDto referenceDto = new ReferenceDto();
+				referenceDto.setName(dattr.getName());
+				referenceDto.setLowerBound(dattr.getLowerBound());
+				referenceDto.setUpperBound(dattr.getUpperBound());
+				diffDto.setReferenceDto(referenceDto);
+				diffDto.setReferenceType(ReferenceTypeDto.ATTRIBUTE);
+			} else if(((ReferenceChange) difference).getValue() instanceof EOperation) {
+				EOperation dop = (EOperation) ((ReferenceChange) difference).getValue();
+				DiagramDiffDto parent = new DiagramDiffDto();
+				parent.setValue(dop.getName());
+				diffDto.setParent(parent);
+				ReferenceDto referenceDto = new ReferenceDto();
+				referenceDto.setName(dop.getName());
+				referenceDto.setLowerBound(dop.getLowerBound());
+				referenceDto.setUpperBound(dop.getUpperBound());
+				diffDto.setReferenceDto(referenceDto);
+				diffDto.setReferenceType(ReferenceTypeDto.OPERATION);
+			} else if(((ReferenceChange) difference).getValue() instanceof EParameter) {
+				EParameter dparam = (EParameter) ((ReferenceChange) difference).getValue();
+				DiagramDiffDto parent = new DiagramDiffDto();
+				parent.setValue(dparam.getName());
+				diffDto.setParent(parent);
+				ReferenceDto referenceDto = new ReferenceDto();
+				referenceDto.setName(dparam.getName());
+				referenceDto.setLowerBound(dparam.getLowerBound());
+				referenceDto.setUpperBound(dparam.getUpperBound());
+				diffDto.setReferenceDto(referenceDto);
+				diffDto.setReferenceType(ReferenceTypeDto.PARAMETER);
 			}
 		} else if(difference instanceof AttributeChange) {
 			String value = (String) ((AttributeChange) difference).getValue().toString();
@@ -64,6 +126,22 @@ public class DiagramDiffMapper extends DiffMapper {
 			modelElementDto.setName(mclass.getName());
 		} else if(modelElement instanceof EPackage) {
 			EPackage mclass = (EPackage) modelElement;
+			modelElementDto.setName(mclass.getName());
+		} else if(modelElement instanceof EReference) {
+			EReference mclass = (EReference) modelElement;
+			modelElementDto.setName(mclass.getName());
+			modelElementDto.setTarget(mclass.getEType().getName());
+		} else if(modelElement instanceof EEnum) {
+			EEnum mclass = (EEnum) modelElement;
+			modelElementDto.setName(mclass.getName());
+		} else if(modelElement instanceof EOperation) {
+			EOperation mclass = (EOperation) modelElement;
+			modelElementDto.setName(mclass.getName());
+		} else if(modelElement instanceof EAttribute) {
+			EAttribute mclass = (EAttribute) modelElement;
+			modelElementDto.setName(mclass.getName());
+		} else if(modelElement instanceof EParameter) {
+			EParameter mclass = (EParameter) modelElement;
 			modelElementDto.setName(mclass.getName());
 		}
 		return modelElementDto;

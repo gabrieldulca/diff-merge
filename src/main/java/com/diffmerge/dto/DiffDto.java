@@ -9,6 +9,8 @@ public class DiffDto {
 	private KindDto kind;
 	
 	private ConflictDto conflict;
+	
+	private ReferenceDto referenceDto;
 
 	public DiffDto() {
 	}
@@ -43,6 +45,14 @@ public class DiffDto {
 
 	public void setConflict(ConflictDto conflict) {
 		this.conflict = conflict;
+	}
+
+	public ReferenceDto getReferenceDto() {
+		return referenceDto;
+	}
+
+	public void setReferenceDto(ReferenceDto referenceDto) {
+		this.referenceDto = referenceDto;
 	}
 	
 	
