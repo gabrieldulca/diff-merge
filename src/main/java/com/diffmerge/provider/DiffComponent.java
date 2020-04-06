@@ -31,10 +31,10 @@ public abstract class DiffComponent {
 	private String type;
 	private DiffMapper mapper;
 	
-	public abstract ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException;
+	public abstract ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException;
 	
-	public ComparisonDto getComparison(String model1, String model2) throws InvalidParametersException {
-		return getComparison(model1, model2, null);
+	public ComparisonDto getComparison(String left, String right) throws InvalidParametersException {
+		return getComparison(left, right, null);
 	}
 
 	public String getType() {
@@ -53,9 +53,9 @@ public abstract class DiffComponent {
 		this.mapper = mapper;
 	}
 
-	protected Comparison compare(String model1, String model2, String model3) throws InvalidParametersException {
+	protected Comparison compare(String left, String right, String origin) throws InvalidParametersException {
 
-		if(model1 == null || model2 == null) {
+		if(left == null || right == null) {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
 		
@@ -65,8 +65,8 @@ public abstract class DiffComponent {
 		UMLResourcesUtil.init(resourceSet2);
 		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-		load(model1, resourceSet1);
-		load(model2, resourceSet2);
+		load(left, resourceSet1);
+		load(right, resourceSet2);
 
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
@@ -79,10 +79,10 @@ public abstract class DiffComponent {
 
 		// Compare the models
 		IComparisonScope scope = null;
-		if(model3 != null) {
+		if(origin != null) {
 			ResourceSet resourceSet3 = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet3);
-			load(model3, resourceSet3);
+			load(origin, resourceSet3);
 			scope = EMFCompare.createDefaultScope(resourceSet1, resourceSet2, resourceSet3);
 		} else {
 			scope = EMFCompare.createDefaultScope(resourceSet1, resourceSet2);

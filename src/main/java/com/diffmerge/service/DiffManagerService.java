@@ -27,9 +27,9 @@ public class DiffManagerService {
 		
 	}
 	
-	public ComparisonDto getDiff(String model1, String model2, String model3, String type) throws InvalidRepresentationException, InvalidParametersException {
+	public ComparisonDto getDiff(String left, String right, String origin, String type) throws InvalidRepresentationException, InvalidParametersException {
 		if(registeredComponents.containsKey(type)) {
-			return registeredComponents.get(type).getComparison(model1, model2, model3);
+			return registeredComponents.get(type).getComparison(left, right, origin);
 		} else {
 			throw new InvalidRepresentationException("No registered component for " + type +" found");
 		}

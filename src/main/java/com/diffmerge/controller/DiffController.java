@@ -37,6 +37,19 @@ public class DiffController {
 	    	
 	        return diffManagerService.getDiff(example2, example1, null, type);
 	    }
+	    
+	    @GET
+	    @Path("compare3w/{type}/{example}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getDiff3w(@PathParam("type") String type, @PathParam("example") String example) throws Exception {
+	    	String example1 = RESOURCE_PATH + example + "/base/" + example + ".ecore";
+	    	String example2 = RESOURCE_PATH + example + "/changes1/" + example + ".ecore";
+	    	String example3 = RESOURCE_PATH + example + "/changes2/" + example + ".ecore";
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getDiff(example2, example3, example1, type);
+	    }
 
 	    @GET
 	    @Path("comparewf/{type}")

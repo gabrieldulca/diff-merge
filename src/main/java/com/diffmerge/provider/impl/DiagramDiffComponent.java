@@ -23,9 +23,9 @@ public class DiagramDiffComponent extends DiffComponent {
 	}
 	
 	@Override
-	public ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException {
+	public ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException {
 				
-		Comparison comparison = compare(model1, model2, model3);
+		Comparison comparison = compare(left, right, origin);
 
 		
 		ComparisonDto comparisonDto = new ComparisonDto();
