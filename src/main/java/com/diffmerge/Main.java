@@ -32,6 +32,7 @@ import main.java.com.diffmerge.provider.impl.FormDiffComponent;
 import main.java.com.diffmerge.provider.impl.TableDiffComponent;
 import main.java.com.diffmerge.provider.impl.TreeDiffComponent;
 import main.java.com.diffmerge.service.DiffManagerService;
+import main.java.com.diffmerge.util.JsonSchemaGenerator;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -41,6 +42,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+		jsonSchemaGenerator.generateSchema();
 		
     	DiffManagerService diffManagerService = DiffManagerService.getInstance();
     	diffManagerService.register(new DiagramDiffComponent());
