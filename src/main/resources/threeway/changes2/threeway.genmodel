@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/Threeway/src" modelPluginID="Threeway" modelName="Threeway"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>threeway.ecore</foreignModel>
+  <genPackages prefix="Threeway" disposableProviderFactory="true" ecorePackage="threeway.ecore#/">
+    <genClasses ecoreClass="threeway.ecore#//Person">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference threeway.ecore#//Person/address"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute threeway.ecore#//Person/FIrstName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute threeway.ecore#//Person/LastName"/>
+    </genClasses>
+    <genClasses ecoreClass="threeway.ecore#//Student"/>
+    <genClasses ecoreClass="threeway.ecore#//Address">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute threeway.ecore#//Address/City"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute threeway.ecore#//Address/Street"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute threeway.ecore#//Address/Number"/>
+    </genClasses>
+    <genClasses ecoreClass="threeway.ecore#//Employee"/>
+  </genPackages>
+</genmodel:GenModel>
