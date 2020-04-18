@@ -1,5 +1,6 @@
 package main.java.com.diffmerge.provider.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DiagramDiffComponent extends DiffComponent {
 	}
 	
 	@Override
-	public ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException {
+	public ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException, IOException {
 				
 		Comparison comparison = compare(left, right, origin);
 

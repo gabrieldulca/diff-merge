@@ -17,10 +17,15 @@ location "http://download.eclipse.org/releases/2019-09" eclipse-platform {
 	org.eclipse.core.runtime
 	}
 
-location "https://download.eclipse.org/glsp/server/p2/nightly/0.8/0.8.0.202002201600/" glsp {
+location "https://download.eclipse.org/glsp/server/p2/nightly/0.8/0.8.0.202004091441/" glsp {
 	org.eclipse.glsp.graph
+	org.eclipse.glsp.api
+	org.eclipse.glsp.server
 }
 
+location "http://ghillairet.github.io/p2" emfjson {
+	org.emfjson.jackson
+}
 
 location "http://download.eclipse.org/modeling/emf/compare/updates/releases/3.3/" emfCompare {
 	org.eclipse.emf.compare.diagram.gmf.feature.group

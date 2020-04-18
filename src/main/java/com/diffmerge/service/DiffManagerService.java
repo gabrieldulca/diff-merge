@@ -1,5 +1,6 @@
 package main.java.com.diffmerge.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
@@ -27,7 +28,7 @@ public class DiffManagerService {
 		
 	}
 	
-	public ComparisonDto getDiff(String left, String right, String origin, String type) throws InvalidRepresentationException, InvalidParametersException {
+	public ComparisonDto getDiff(String left, String right, String origin, String type) throws InvalidRepresentationException, InvalidParametersException, IOException {
 		if(registeredComponents.containsKey(type)) {
 			return registeredComponents.get(type).getComparison(left, right, origin);
 		} else {

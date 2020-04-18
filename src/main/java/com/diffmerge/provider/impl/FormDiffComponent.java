@@ -1,5 +1,6 @@
 package main.java.com.diffmerge.provider.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class FormDiffComponent extends DiffComponent{
 	}
 	
 	@Override
-	public ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException {
+	public ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException, IOException {
 				
 		Comparison comparison = compare(model1, model2, model3);
 
