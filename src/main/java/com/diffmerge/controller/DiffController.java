@@ -5,6 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
@@ -18,7 +19,7 @@ public class DiffController {
 	    private static final String RESOURCE_PATH = "src/main/resources/";
 
 	    @GET
-	    @Path("compare/{representation}")
+	    @Path("compareold/{representation}")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto testComp(@PathParam("representation") String representation) throws Exception {
 	    	DiffService diffService = new DiffService();
@@ -27,7 +28,7 @@ public class DiffController {
 	    }
 	    
 	    @GET
-	    @Path("compare/{type}/{example}")
+	    @Path("compareecore/{type}/{example}")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto getDiff(@PathParam("type") String type, @PathParam("example") String example) throws Exception {
 	    	String example1 = RESOURCE_PATH + example + "/" + example + ".ecore";
@@ -52,15 +53,16 @@ public class DiffController {
 	    }
 
 	    @GET
-	    @Path("comparewf/{type}")
+	    @Path("compare/{type}")
 	    @Produces(MediaType.APPLICATION_JSON)
-	    public ComparisonDto getDiffWf(@PathParam("type") String type) throws Exception {
-	    	String example1 = RESOURCE_PATH + "example1.wf";
-	    	String example2 = RESOURCE_PATH + "example2.wf";;
+	    public ComparisonDto getDiffWf(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
 	    	
 	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
 	    	
-	        return diffManagerService.getDiff(example1, example2, null, type);
+	        return diffManagerService.getDiff(file1, file2, null, type);
 	    }
 	
 }
