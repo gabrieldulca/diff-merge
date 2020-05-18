@@ -50,7 +50,6 @@ import com.google.inject.Injector;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.exception.InvalidParametersException;
-import main.java.com.diffmerge.glsp.SModelElementTypeAdapter;
 import main.java.com.diffmerge.mapper.DiffMapper;
 import io.typefox.sprotty.api.HtmlRoot;
 import io.typefox.sprotty.api.PreRenderedElement;

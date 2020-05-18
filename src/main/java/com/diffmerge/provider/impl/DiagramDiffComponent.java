@@ -36,7 +36,10 @@ public class DiagramDiffComponent extends DiffComponent {
 		
 		comparisonDto.setThreeWay(comparison.isThreeWay());
 		for(Match match:matchList) {
-			matchDtoList.add(mapMatch(match, comparison.isThreeWay()));
+			 MatchDto matchDto = mapMatch(match, comparison.isThreeWay());
+			 if(matchDto.getSubMatches()!=null) {
+				 matchDtoList.add(matchDto);
+			 }
 		}
 		
 		comparisonDto.setMatches(matchDtoList);
@@ -78,7 +81,11 @@ public class DiagramDiffComponent extends DiffComponent {
 			matchDto.setOrigin(getMapper().toModelElementDto(match.getOrigin()));
 		}
 		matchDto.setDiffs(getCurrentDiffs(match));
-		matchDto.setSubMatches(getCurrentSubMatches(match, threeWay));
+		List<MatchDto> currentSubMatches = getCurrentSubMatches(match, threeWay);
+		if(currentSubMatches.size()>0) {
+			matchDto.setSubMatches(currentSubMatches);
+			System.out.println("Current submatches size "+getCurrentSubMatches(match, threeWay).size());
+		}
 		
 		return matchDto;
 		
