@@ -84,7 +84,6 @@ public class DiagramDiffComponent extends DiffComponent {
 		List<MatchDto> currentSubMatches = getCurrentSubMatches(match, threeWay);
 		if(currentSubMatches.size()>0) {
 			matchDto.setSubMatches(currentSubMatches);
-			System.out.println("Current submatches size "+getCurrentSubMatches(match, threeWay).size());
 		}
 		
 		return matchDto;

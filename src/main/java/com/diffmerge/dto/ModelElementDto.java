@@ -1,5 +1,6 @@
 package main.java.com.diffmerge.dto;
 
+// Should be expanded as it isn't complete
 public class ModelElementDto {
 	
 	private String name;

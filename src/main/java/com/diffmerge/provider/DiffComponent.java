@@ -122,8 +122,8 @@ public abstract class DiffComponent {
 		if(origin != null) {
 			ResourceSet resourceSet3 = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet3);
-			load(origin, resourceSet3);
-			scope = EMFCompare.createDefaultScope(resourceSet1, resourceSet2, resourceSet3);
+			//load(origin, resourceSet3);
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right),loadResource(origin));
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
