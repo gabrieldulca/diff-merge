@@ -14,6 +14,16 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.glsp.graph.GCompartment;
+import org.eclipse.glsp.graph.GDimension;
+import org.eclipse.glsp.graph.GEdge;
+import org.eclipse.glsp.graph.GGraph;
+import org.eclipse.glsp.graph.GLabel;
+import org.eclipse.glsp.graph.GNode;
+import org.eclipse.glsp.graph.GPoint;
+import org.eclipse.glsp.graph.impl.GDimensionImpl;
+import org.eclipse.glsp.graph.impl.GPointImpl;
+import org.eclipse.glsp.graph.impl.StringToObjectMapEntryImpl;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Class;
 
@@ -121,7 +131,42 @@ public class DiagramDiffMapper extends DiffMapper {
 	@Override
 	public ModelElementDto toModelElementDto(EObject modelElement) {
 		ModelElementDto modelElementDto = new ModelElementDto();
-		if(modelElement instanceof EClass) {
+		// for ggraph models
+		if(modelElement instanceof GCompartment) {
+			GCompartment mclass = (GCompartment) modelElement;
+			modelElementDto.setId(mclass.getId());
+			modelElementDto.setType(mclass.getType());
+		} else if(modelElement instanceof GGraph) {
+			GGraph mclass = (GGraph) modelElement;
+			modelElementDto.setId(mclass.getId());
+			modelElementDto.setType(mclass.getType());
+		} else if(modelElement instanceof GNode) {
+			GNode mclass = (GNode) modelElement;
+			modelElementDto.setId(mclass.getId());
+			modelElementDto.setType(mclass.getType());
+		} else if(modelElement instanceof GEdge) {
+			GEdge mclass = (GEdge) modelElement;
+			modelElementDto.setId(mclass.getId());
+			modelElementDto.setType(mclass.getType());
+		} else if(modelElement instanceof GLabel) {
+			GLabel mclass = (GLabel) modelElement;
+			modelElementDto.setId(mclass.getId());
+			modelElementDto.setType(mclass.getType());
+		} else if(modelElement instanceof GDimension) {
+			GDimension mclass = (GDimension) modelElement;
+			modelElementDto.setId(mclass.getHeight() + "-" + mclass.getWidth());
+			modelElementDto.setType("GDimension");
+		} else if(modelElement instanceof GPoint) {
+			GPoint mclass = (GPoint) modelElement;
+			modelElementDto.setId(mclass.getX() + "-" + mclass.getY());
+			modelElementDto.setType("GDimension");
+		} else if(modelElement instanceof StringToObjectMapEntryImpl) {
+			StringToObjectMapEntryImpl mclass = (StringToObjectMapEntryImpl) modelElement;
+			modelElementDto.setId(mclass.getKey());
+			modelElementDto.setType("StringToObjectMapEntry");
+		}
+		// for ecore models
+		else if(modelElement instanceof EClass) {
 			EClass mclass = (EClass) modelElement;
 			modelElementDto.setName(mclass.getName());
 		} else if(modelElement instanceof EPackage) {

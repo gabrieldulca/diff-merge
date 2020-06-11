@@ -51,12 +51,21 @@ public class DiagramDiffComponent extends DiffComponent {
 		List<Diff> diffList = match.getDifferences();
 		List<DiffDto> diffDtoList = new ArrayList<DiffDto>();
 		for(Diff diff:diffList) {
+			if(diff.getKind().getName().equals("DELETE")) {
+				if(diff.getSource().getName().equals("LEFT") && match.getLeft() != null) {
+					continue;
+				} else if(diff.getSource().getName().equals("RIGHT") && match.getRight() != null) {
+					continue;
+				}
+			} else if(diff.getKind().getName().equals("MOVE")) {
+				continue;
+			}
 			DiffDto diffDto = getMapper().toDiffDto(diff);
 			if(diffDto != null) {
 				diffDtoList.add(diffDto);
 			}
 		}
-		return diffDtoList;
+		return diffDtoList.size() > 0 ? diffDtoList : null;
 		
 	}
 	
@@ -75,8 +84,12 @@ public class DiagramDiffComponent extends DiffComponent {
 	
 	public MatchDto mapMatch(Match match, boolean threeWay) {
 		MatchDto matchDto = new MatchDto();
-		matchDto.setLeft(getMapper().toModelElementDto(match.getLeft()));
-		matchDto.setRight(getMapper().toModelElementDto(match.getRight()));
+		if(match.getLeft() != null) {
+			matchDto.setLeft(getMapper().toModelElementDto(match.getLeft()));
+		}
+		if(match.getRight() != null) {
+			matchDto.setRight(getMapper().toModelElementDto(match.getRight()));
+		}
 		if(threeWay) {
 			matchDto.setOrigin(getMapper().toModelElementDto(match.getOrigin()));
 		}
