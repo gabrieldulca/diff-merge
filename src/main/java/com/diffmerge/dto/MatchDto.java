@@ -57,6 +57,12 @@ public class MatchDto {
 		this.diffs = diffs;
 	}
 
+	@Override
+	public String toString() {
+		return "MatchDto [subMatches=" + subMatches + ", left=" + left + ", right=" + right + ", origin=" + origin
+				+ ", diffs=" + diffs + "]";
+	}
+
 	
 
 }

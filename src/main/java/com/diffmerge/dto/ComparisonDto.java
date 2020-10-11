@@ -28,6 +28,11 @@ public class ComparisonDto {
 		this.matches = matches;
 	}
 
+	@Override
+	public String toString() {
+		return "ComparisonDto [matches=" + matches + ", threeWay=" + threeWay + "]";
+	}
+
 	
 	
 }

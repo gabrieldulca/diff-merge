@@ -54,6 +54,12 @@ public class DiffDto {
 	public void setReferenceDto(ReferenceDto referenceDto) {
 		this.referenceDto = referenceDto;
 	}
+
+	@Override
+	public String toString() {
+		return "DiffDto [type=" + type + ", value=" + value + ", kind=" + kind + ", conflict=" + conflict
+				+ ", referenceDto=" + referenceDto + "]";
+	}
 	
 	
 

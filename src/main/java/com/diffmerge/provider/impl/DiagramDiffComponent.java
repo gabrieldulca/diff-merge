@@ -37,12 +37,15 @@ public class DiagramDiffComponent extends DiffComponent {
 		comparisonDto.setThreeWay(comparison.isThreeWay());
 		for(Match match:matchList) {
 			 MatchDto matchDto = mapMatch(match, comparison.isThreeWay());
-			 if(matchDto.getSubMatches()!=null) {
-				 matchDtoList.add(matchDto);
+			 if(matchDto != null) {
+				 if(matchDto.getSubMatches()!=null) {
+					 matchDtoList.add(matchDto);
+				 }
 			 }
 		}
 		
 		comparisonDto.setMatches(matchDtoList);
+		System.out.println(comparisonDto);
 		return comparisonDto;
 		
 	}
@@ -92,6 +95,10 @@ public class DiagramDiffComponent extends DiffComponent {
 		}
 		if(threeWay) {
 			matchDto.setOrigin(getMapper().toModelElementDto(match.getOrigin()));
+		}
+		
+		if(matchDto.getLeft() == null && matchDto.getRight() == null) {
+			return null;
 		}
 		matchDto.setDiffs(getCurrentDiffs(match));
 		List<MatchDto> currentSubMatches = getCurrentSubMatches(match, threeWay);

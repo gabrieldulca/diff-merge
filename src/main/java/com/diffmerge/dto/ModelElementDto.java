@@ -46,5 +46,12 @@ public class ModelElementDto {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	@Override
+	public String toString() {
+		return "ModelElementDto [id=" + id + ", name=" + name + ", type=" + type + ", target=" + target + "]";
+	}
+	
+	
 	
 }

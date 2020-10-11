@@ -133,9 +133,7 @@ public class DiagramDiffMapper extends DiffMapper {
 		ModelElementDto modelElementDto = new ModelElementDto();
 		// for ggraph models
 		if(modelElement instanceof GCompartment) {
-			GCompartment mclass = (GCompartment) modelElement;
-			modelElementDto.setId(mclass.getId());
-			modelElementDto.setType(mclass.getType());
+			return null;
 		} else if(modelElement instanceof GGraph) {
 			GGraph mclass = (GGraph) modelElement;
 			modelElementDto.setId(mclass.getId());
@@ -149,21 +147,13 @@ public class DiagramDiffMapper extends DiffMapper {
 			modelElementDto.setId(mclass.getId());
 			modelElementDto.setType(mclass.getType());
 		} else if(modelElement instanceof GLabel) {
-			GLabel mclass = (GLabel) modelElement;
-			modelElementDto.setId(mclass.getId());
-			modelElementDto.setType(mclass.getType());
+			return null;
 		} else if(modelElement instanceof GDimension) {
-			GDimension mclass = (GDimension) modelElement;
-			modelElementDto.setId(mclass.getHeight() + "-" + mclass.getWidth());
-			modelElementDto.setType("GDimension");
+			return null;
 		} else if(modelElement instanceof GPoint) {
-			GPoint mclass = (GPoint) modelElement;
-			modelElementDto.setId(mclass.getX() + "-" + mclass.getY());
-			modelElementDto.setType("GDimension");
+			return null;
 		} else if(modelElement instanceof StringToObjectMapEntryImpl) {
-			StringToObjectMapEntryImpl mclass = (StringToObjectMapEntryImpl) modelElement;
-			modelElementDto.setId(mclass.getKey());
-			modelElementDto.setType("StringToObjectMapEntry");
+			return null;
 		}
 		// for ecore models
 		else if(modelElement instanceof EClass) {
