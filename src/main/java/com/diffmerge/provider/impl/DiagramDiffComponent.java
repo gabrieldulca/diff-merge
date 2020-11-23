@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.BasicMonitor;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
+import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.Match;
+import org.eclipse.emf.compare.merge.BatchMerger;
+import org.eclipse.emf.compare.merge.IBatchMerger;
+import org.eclipse.emf.compare.merge.IMerger;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.dto.DiffDto;
@@ -23,6 +29,33 @@ public class DiagramDiffComponent extends DiffComponent {
 		super.setMapper(new DiagramDiffMapper());
 	}
 	
+	@Override
+	public ComparisonDto getMerge(String left, String right, String origin) throws InvalidParametersException, IOException {
+				
+		Comparison comparison = merge(left, right, origin);
+		
+		ComparisonDto comparisonDto = new ComparisonDto();
+		
+		List<Match> matchList = comparison.getMatches();
+		List<MatchDto> matchDtoList = new ArrayList<MatchDto>();
+		
+		comparisonDto.setThreeWay(comparison.isThreeWay());
+		for(Match match:matchList) {
+			 MatchDto matchDto = mapMatch(match, comparison.isThreeWay());
+			 if(matchDto != null) {
+				 if(matchDto.getSubMatches()!=null) {
+					 matchDtoList.add(matchDto);
+				 }
+			 }
+		}
+		
+		comparisonDto.setMatches(matchDtoList);
+		System.out.println(comparisonDto);
+		return comparisonDto;
+		
+	}
+
+
 	@Override
 	public ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException, IOException {
 				

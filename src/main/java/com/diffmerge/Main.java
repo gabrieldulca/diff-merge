@@ -51,7 +51,7 @@ public class Main {
     	diffManagerService.register(new TableDiffComponent());
     	diffManagerService.register(new TreeDiffComponent());
 		
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		ServletContextHandler context = new ServletContextHandler(20);
         context.setContextPath("/");
 
         Server jettyServer = new Server(8080);

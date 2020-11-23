@@ -24,6 +24,17 @@ public class TreeDiffComponent extends DiffComponent {
 	}
 	
 	@Override
+	public ComparisonDto getMerge(String left, String right, String origin) throws InvalidParametersException, IOException {
+				
+		Comparison comparison = merge(left, right, origin);
+		
+		ComparisonDto comparisonDto = new ComparisonDto();
+		
+		return comparisonDto;
+		
+	}
+	
+	@Override
 	public ComparisonDto getComparison(String model1, String model2, String model3) throws InvalidParametersException, IOException {
 				
 		Comparison comparison = compare(model1, model2, model3);

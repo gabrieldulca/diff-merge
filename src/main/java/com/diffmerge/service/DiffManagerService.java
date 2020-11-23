@@ -37,4 +37,12 @@ public class DiffManagerService {
 		
 	}
 
+	public ComparisonDto getMerge(String left, String right, String origin, String type) throws InvalidRepresentationException, InvalidParametersException, IOException {
+		if(registeredComponents.containsKey(type)) {
+			return registeredComponents.get(type).getMerge(left, right, origin);
+		} else {
+			throw new InvalidRepresentationException("No registered component for " + type +" found");
+		}
+	}
+
 }
