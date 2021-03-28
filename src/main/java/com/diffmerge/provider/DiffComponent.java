@@ -40,6 +40,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.glsp.graph.GCompartment;
 import org.eclipse.glsp.graph.GDimension;
 import org.eclipse.glsp.graph.GGraph;
 import org.eclipse.glsp.graph.GModelElement;
@@ -207,7 +208,13 @@ public abstract class DiffComponent {
 				for(GModelElement child:diffNode.getChildren()) {
 					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
 				}
+			} else if(((ReferenceChangeSpec) diff).getValue() instanceof GCompartment) {
+				GCompartment diffNode = (GCompartment) ((ReferenceChangeSpec) diff).getValue();
+				for(GModelElement child:diffNode.getChildren()) {
+					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+				}
 			}
+			//TODO go through hierarchy till point
 		}
 	}
 
