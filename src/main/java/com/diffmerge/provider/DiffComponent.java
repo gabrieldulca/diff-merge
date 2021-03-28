@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.Match;
+import org.eclipse.emf.compare.internal.spec.ReferenceChangeSpec;
 import org.eclipse.emf.compare.match.DefaultComparisonFactory;
 import org.eclipse.emf.compare.match.DefaultEqualityHelperFactory;
 import org.eclipse.emf.compare.match.DefaultMatchEngine;
@@ -38,12 +40,17 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.glsp.graph.GDimension;
 import org.eclipse.glsp.graph.GGraph;
+import org.eclipse.glsp.graph.GModelElement;
 import org.eclipse.glsp.graph.GModelRoot;
+import org.eclipse.glsp.graph.GPoint;
 import org.eclipse.glsp.graph.GraphPackage;
 import org.eclipse.glsp.graph.gson.EnumTypeAdapter;
 import org.eclipse.glsp.graph.gson.GGraphGsonConfigurator;
+import org.eclipse.glsp.graph.impl.GCompartmentImpl;
 import org.eclipse.glsp.graph.impl.GGraphImpl;
+import org.eclipse.glsp.graph.impl.GNodeImpl;
 
 import static org.eclipse.glsp.graph.GraphPackage.Literals.*;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
@@ -117,7 +124,7 @@ public abstract class DiffComponent {
 		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 
 		resourceSet1.createResource(URI.createFileURI(left));
-		resourceSet2.createResource(URI.createFileURI(left));
+		resourceSet2.createResource(URI.createFileURI(right));
 
 		/*
 		 * load(left, resourceSet1); load(right, resourceSet2);
@@ -164,7 +171,7 @@ public abstract class DiffComponent {
 		IMerger merger = new ReferenceChangeMerger();
 		try {
 			for (Diff diff : differences) {
-				merger.copyLeftToRight(diff, new BasicMonitor());
+				copyChildren(merger, diff, comparison.getDifferences());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -178,7 +185,11 @@ public abstract class DiffComponent {
 
 			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
 			String jsonInString = gson.toJson((GGraphImpl) rightResource);
-			gson.toJson((GGraphImpl) rightResource, new FileWriter(right + "_WRITTEN.json"));
+			Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
+		    
+	        gson.toJson((GGraphImpl) rightResource, writer);
+	        writer.flush(); //flush data to file   <---
+	        writer.close();
 		}
 
 		// check that models are equal after batch merging
@@ -186,6 +197,31 @@ public abstract class DiffComponent {
 		EList<Diff> assertionDifferences = assertionComparison.getDifferences();
 		System.out.println("after batch merging: " + assertionDifferences.size());
 		return assertionComparison;
+	}
+
+	private void copyChildren(IMerger merger, Diff diff, List<Diff> allDifferences) {
+		merger.copyLeftToRight(diff, new BasicMonitor());
+		if(diff instanceof ReferenceChangeSpec) {
+			if(((ReferenceChangeSpec) diff).getValue() instanceof GNodeImpl) {
+				GNodeImpl diffNode = (GNodeImpl) ((ReferenceChangeSpec) diff).getValue();
+				for(GModelElement child:diffNode.getChildren()) {
+					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+				}
+			}
+		}
+	}
+
+	private Diff findDifference(GModelElement child, List<Diff> allDifferences) {
+		for(Diff d: allDifferences) {
+			if(d instanceof ReferenceChangeSpec) {
+				if(((ReferenceChangeSpec) d).getValue().getClass().equals(child.getClass())) {
+					if(((ReferenceChangeSpec) d).getValue().equals(child)) {
+							return d;
+					}
+				}
+			}
+		}
+			return null;
 	}
 
 	protected Comparison compare(String left, String right, String origin)
