@@ -3,17 +3,21 @@ package main.java.com.diffmerge.provider;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.EMFCompare;
+import org.eclipse.emf.compare.Match;
 import org.eclipse.emf.compare.match.DefaultComparisonFactory;
 import org.eclipse.emf.compare.match.DefaultEqualityHelperFactory;
 import org.eclipse.emf.compare.match.DefaultMatchEngine;
@@ -25,6 +29,7 @@ import org.eclipse.emf.compare.match.impl.MatchEngineFactoryRegistryImpl;
 import org.eclipse.emf.compare.merge.BatchMerger;
 import org.eclipse.emf.compare.merge.IBatchMerger;
 import org.eclipse.emf.compare.merge.IMerger;
+import org.eclipse.emf.compare.merge.ReferenceChangeMerger;
 import org.eclipse.emf.compare.scope.IComparisonScope;
 import org.eclipse.emf.compare.utils.UseIdentifiers;
 import org.eclipse.emf.ecore.EClass;
@@ -38,6 +43,8 @@ import org.eclipse.glsp.graph.GModelRoot;
 import org.eclipse.glsp.graph.GraphPackage;
 import org.eclipse.glsp.graph.gson.EnumTypeAdapter;
 import org.eclipse.glsp.graph.gson.GGraphGsonConfigurator;
+import org.eclipse.glsp.graph.impl.GGraphImpl;
+
 import static org.eclipse.glsp.graph.GraphPackage.Literals.*;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
 
@@ -68,13 +75,14 @@ import io.typefox.sprotty.api.SModelElement;
 import io.typefox.sprotty.api.SNode;
 
 public abstract class DiffComponent {
-	
+
 	private String type;
 	private DiffMapper mapper;
 	private GGraphGsonConfigurator gsonConfigurator;
-	
-	public abstract ComparisonDto getComparison(String left, String right, String origin) throws InvalidParametersException, IOException;
-	
+
+	public abstract ComparisonDto getComparison(String left, String right, String origin)
+			throws InvalidParametersException, IOException;
+
 	public ComparisonDto getComparison(String left, String right) throws InvalidParametersException, IOException {
 		return getComparison(left, right, null);
 	}
@@ -86,7 +94,7 @@ public abstract class DiffComponent {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public DiffMapper getMapper() {
 		return mapper;
 	}
@@ -94,12 +102,13 @@ public abstract class DiffComponent {
 	public void setMapper(DiffMapper mapper) {
 		this.mapper = mapper;
 	}
-	
-	protected Comparison merge(String left, String right, String origin) throws InvalidParametersException, IOException {
-		if(left == null || right == null) {
+
+	protected Comparison merge(String left, String right, String origin)
+			throws InvalidParametersException, IOException {
+		if (left == null || right == null) {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
-		
+
 		ResourceSet resourceSet1 = new ResourceSetImpl();
 		ResourceSet resourceSet2 = new ResourceSetImpl();
 		UMLResourcesUtil.init(resourceSet1);
@@ -107,58 +116,85 @@ public abstract class DiffComponent {
 		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 
-	    
 		resourceSet1.createResource(URI.createFileURI(left));
 		resourceSet2.createResource(URI.createFileURI(left));
 
-		/*load(left, resourceSet1);
-		load(right, resourceSet2);*/
+		/*
+		 * load(left, resourceSet1); load(right, resourceSet2);
+		 */
 
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
 		IComparisonFactory comparisonFactory = new DefaultComparisonFactory(new DefaultEqualityHelperFactory());
 		IMatchEngine.Factory matchEngineFactory = new MatchEngineFactoryImpl(matcher, comparisonFactory);
-	        matchEngineFactory.setRanking(20);
-	        IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
-	        matchEngineRegistry.add(matchEngineFactory);
+		matchEngineFactory.setRanking(20);
+		IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
+		matchEngineRegistry.add(matchEngineFactory);
 		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
 
 		// Compare the models
 		IComparisonScope scope = null;
-		if(origin != null) {
+		if (origin != null) {
 			ResourceSet resourceSet3 = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet3);
-			//load(origin, resourceSet3);
-			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right),loadResource(origin));
+			// load(origin, resourceSet3);
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
-		
-		Comparison comparison = comparator.compare(scope);
-		List<Diff> differences = comparison.getDifferences();
-		for(Diff diff : differences) {
-	        System.out.println(diff.toString());
-	    }
 
-	    // Let's merge every single diff
-	    //IMerger.Registry mergerRegistry = new IMerger.RegistryImpl();
-	    IMerger.Registry mergerRegistry = IMerger.RegistryImpl.createStandaloneInstance();
-	    IBatchMerger merger = new BatchMerger(mergerRegistry);
-	    merger.copyAllLeftToRight(differences, new BasicMonitor());
-	    
-	    // check that models are equal after batch merging
-	    Comparison assertionComparison = EMFCompare.builder().build().compare(scope);
-	    EList<Diff> assertionDifferences = assertionComparison.getDifferences();
-	    System.out.println("after batch merging: " + assertionDifferences.size());
-	    return assertionComparison;
+		List<Diff> differences = new ArrayList<Diff>();
+		Comparison comparison = comparator.compare(scope);
+		for (Match match : comparison.getMatches()) {
+			if (match.getLeft() != null) {
+				if (match.getLeft() instanceof GGraphImpl) {
+					differences = match.getDifferences();
+					break;
+				}
+			}
+		}
+		for (Diff diff : differences) {
+			System.out.println(diff.toString());
+		}
+
+		// Let's merge every single diff
+		// IMerger.Registry mergerRegistry = new IMerger.RegistryImpl();
+		// IMerger.Registry mergerRegistry =
+		// IMerger.RegistryImpl.createStandaloneInstance();
+		IMerger merger = new ReferenceChangeMerger();
+		try {
+			for (Diff diff : differences) {
+				merger.copyLeftToRight(diff, new BasicMonitor());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Notifier rightResource = scope.getRight();
+		if (rightResource instanceof GGraphImpl) {
+			gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+			gsonConfigurator.withTypes(getModelTypes());
+
+			GsonBuilder builder = new GsonBuilder();
+
+			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+			String jsonInString = gson.toJson((GGraphImpl) rightResource);
+			gson.toJson((GGraphImpl) rightResource, new FileWriter(right + "_WRITTEN.json"));
+		}
+
+		// check that models are equal after batch merging
+		Comparison assertionComparison = EMFCompare.builder().build().compare(scope);
+		EList<Diff> assertionDifferences = assertionComparison.getDifferences();
+		System.out.println("after batch merging: " + assertionDifferences.size());
+		return assertionComparison;
 	}
 
-	protected Comparison compare(String left, String right, String origin) throws InvalidParametersException, IOException {
+	protected Comparison compare(String left, String right, String origin)
+			throws InvalidParametersException, IOException {
 
-		if(left == null || right == null) {
+		if (left == null || right == null) {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
-		
+
 		ResourceSet resourceSet1 = new ResourceSetImpl();
 		ResourceSet resourceSet2 = new ResourceSetImpl();
 		UMLResourcesUtil.init(resourceSet1);
@@ -166,63 +202,63 @@ public abstract class DiffComponent {
 		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
 
-	    
 		resourceSet1.createResource(URI.createFileURI(left));
 		resourceSet2.createResource(URI.createFileURI(left));
 
-		/*load(left, resourceSet1);
-		load(right, resourceSet2);*/
+		/*
+		 * load(left, resourceSet1); load(right, resourceSet2);
+		 */
 
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
 		IComparisonFactory comparisonFactory = new DefaultComparisonFactory(new DefaultEqualityHelperFactory());
 		IMatchEngine.Factory matchEngineFactory = new MatchEngineFactoryImpl(matcher, comparisonFactory);
-	        matchEngineFactory.setRanking(20);
-	        IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
-	        matchEngineRegistry.add(matchEngineFactory);
+		matchEngineFactory.setRanking(20);
+		IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
+		matchEngineRegistry.add(matchEngineFactory);
 		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
 
 		// Compare the models
 		IComparisonScope scope = null;
-		if(origin != null) {
+		if (origin != null) {
 			ResourceSet resourceSet3 = new ResourceSetImpl();
 			UMLResourcesUtil.init(resourceSet3);
-			//load(origin, resourceSet3);
-			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right),loadResource(origin));
+			// load(origin, resourceSet3);
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
-		
+
 		return comparator.compare(scope);
 	}
-	
 
 	private static void load(String absolutePath, ResourceSet resourceSet) {
-	  URI uri = URI.createFileURI(absolutePath);
+		URI uri = URI.createFileURI(absolutePath);
 
-	  resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("uml", new UMLResourceFactoryImpl());
-	  resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-	  resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-	  resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("wf", new JsonResourceFactory());
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("uml", new UMLResourceFactoryImpl());
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore",
+				new EcoreResourceFactoryImpl());
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("wf", new JsonResourceFactory());
 
-	  // Resource will be loaded within the resource set
-	  try {
-		
-		  resourceSet.getResource(uri, true);
-		} catch(Exception e) {
+		// Resource will be loaded within the resource set
+		try {
+
+			resourceSet.getResource(uri, true);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private GGraph loadResource(final String path) {
 		gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
-	      gsonConfigurator.withTypes(getModelTypes());
+		gsonConfigurator.withTypes(getModelTypes());
 
-	      GsonBuilder builder = new GsonBuilder();
+		GsonBuilder builder = new GsonBuilder();
 
 		Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
-	    JsonReader jsonReader = null;
-	    GGraph ggraph = null;
+		JsonReader jsonReader = null;
+		GGraph ggraph = null;
 		try {
 			jsonReader = new JsonReader(new FileReader(path));
 			ggraph = gson.fromJson(jsonReader, GGraph.class);
@@ -233,9 +269,9 @@ public abstract class DiffComponent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    return ggraph;
-   }
-	
+		return ggraph;
+	}
+
 	public Map<String, EClass> getModelTypes() {
 		Map<String, EClass> conf = new HashMap<>();
 
@@ -260,11 +296,11 @@ public abstract class DiffComponent {
 
 	}
 
-	public abstract ComparisonDto getMerge(String left, String right, String origin) throws InvalidParametersException, IOException;
-	
+	public abstract ComparisonDto getMerge(String left, String right, String origin)
+			throws InvalidParametersException, IOException;
+
 	public ComparisonDto getMerge(String left, String right) throws InvalidParametersException, IOException {
 		return getMerge(left, right, null);
 	}
-	
 
 }
