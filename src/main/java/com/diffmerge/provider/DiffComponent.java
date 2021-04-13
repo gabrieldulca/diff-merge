@@ -155,10 +155,10 @@ public abstract class DiffComponent {
 		Comparison comparison = comparator.compare(scope);
 		for (Match match : comparison.getMatches()) {
 			if (match.getLeft() != null) {
-				if (match.getLeft() instanceof GGraphImpl) {
+				//if (match.getLeft() instanceof GGraphImpl) {
 					differences = match.getDifferences();
-					break;
-				}
+					//break;
+				//}
 			}
 		}
 		for (Diff diff : differences) {
@@ -170,9 +170,11 @@ public abstract class DiffComponent {
 		// IMerger.Registry mergerRegistry =
 		// IMerger.RegistryImpl.createStandaloneInstance();
 		IMerger merger = new ReferenceChangeMerger();
+		
 		try {
 			for (Diff diff : differences) {
-				copyChildren(merger, diff, comparison.getDifferences());
+				//copyChildren(merger, diff, comparison.getDifferences());
+				merger.copyLeftToRight(diff, new BasicMonitor());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
