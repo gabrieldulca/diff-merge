@@ -201,6 +201,9 @@ public abstract class DiffComponent {
 	}
 
 	private void copyChildren(IMerger merger, Diff diff, List<Diff> allDifferences) {
+		if(diff == null) {
+			return;
+		}
 		merger.copyLeftToRight(diff, new BasicMonitor());
 		if(diff instanceof ReferenceChangeSpec) {
 			if(((ReferenceChangeSpec) diff).getValue() instanceof GNodeImpl) {
@@ -208,17 +211,52 @@ public abstract class DiffComponent {
 				for(GModelElement child:diffNode.getChildren()) {
 					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
 				}
+				copyChildren(merger, findDifference(diffNode.getPosition(), allDifferences), allDifferences);
+				copyChildren(merger, findDifference(diffNode.getSize(), allDifferences), allDifferences);
 			} else if(((ReferenceChangeSpec) diff).getValue() instanceof GCompartment) {
 				GCompartment diffNode = (GCompartment) ((ReferenceChangeSpec) diff).getValue();
 				for(GModelElement child:diffNode.getChildren()) {
 					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
-				}
+				} 
+				
+				
 			}
 			//TODO go through hierarchy till point
 		}
 	}
-
+	private Diff findDifference(GDimension child, List<Diff> allDifferences) {
+		if(child == null)
+			return null;
+		for(Diff d: allDifferences) {
+			if(d instanceof ReferenceChangeSpec) {
+				if(((ReferenceChangeSpec) d).getValue().getClass().equals(child.getClass())) {
+					if(((ReferenceChangeSpec) d).getValue().equals(child)) {
+							return d;
+					}
+				}
+			}
+		}
+			return null;
+	}
+	
+	private Diff findDifference(GPoint child, List<Diff> allDifferences) {
+		if(child == null)
+			return null;
+		for(Diff d: allDifferences) {
+			if(d instanceof ReferenceChangeSpec) {
+				if(((ReferenceChangeSpec) d).getValue().getClass().equals(child.getClass())) {
+					if(((ReferenceChangeSpec) d).getValue().equals(child)) {
+							return d;
+					}
+				}
+			}
+		}
+			return null;
+	}
+	
 	private Diff findDifference(GModelElement child, List<Diff> allDifferences) {
+		if(child == null)
+			return null;
 		for(Diff d: allDifferences) {
 			if(d instanceof ReferenceChangeSpec) {
 				if(((ReferenceChangeSpec) d).getValue().getClass().equals(child.getClass())) {
