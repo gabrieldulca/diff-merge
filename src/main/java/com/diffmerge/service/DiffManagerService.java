@@ -44,5 +44,13 @@ public class DiffManagerService {
 			throw new InvalidRepresentationException("No registered component for " + type +" found");
 		}
 	}
+	
+	public ComparisonDto getMergeSingleChange(String left, String right, String origin, String type, String elem, boolean revert) throws InvalidRepresentationException, InvalidParametersException, IOException {
+		if(registeredComponents.containsKey(type)) {
+			return registeredComponents.get(type).getMergeSingleChange(left, right, origin, elem, revert);
+		} else {
+			throw new InvalidRepresentationException("No registered component for " + type +" found");
+		}
+	}
 
 }

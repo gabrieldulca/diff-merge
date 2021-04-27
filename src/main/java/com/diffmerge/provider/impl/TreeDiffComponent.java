@@ -55,6 +55,15 @@ public class TreeDiffComponent extends DiffComponent {
 		
 	}
 	
+	@Override
+	public ComparisonDto getMergeSingleChange(String left, String right, String origin, String elem, boolean revert) {
+		Comparison comparison = (Comparison) getMergeSingleChange(left, right, origin, elem, revert);
+		
+		ComparisonDto comparisonDto = new ComparisonDto();
+		
+		return comparisonDto;
+	}
+	
 	public List<DiffDto> getCurrentDiffs(Match match) {
 		List<Diff> diffList = match.getDifferences();
 		List<DiffDto> diffDtoList = new ArrayList<DiffDto>();

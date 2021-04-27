@@ -28,6 +28,7 @@ import org.eclipse.emf.compare.match.IMatchEngine;
 import org.eclipse.emf.compare.match.eobject.IEObjectMatcher;
 import org.eclipse.emf.compare.match.impl.MatchEngineFactoryImpl;
 import org.eclipse.emf.compare.match.impl.MatchEngineFactoryRegistryImpl;
+import org.eclipse.emf.compare.merge.AttributeChangeMerger;
 import org.eclipse.emf.compare.merge.BatchMerger;
 import org.eclipse.emf.compare.merge.IBatchMerger;
 import org.eclipse.emf.compare.merge.IMerger;
@@ -45,6 +46,7 @@ import org.eclipse.glsp.graph.GDimension;
 import org.eclipse.glsp.graph.GGraph;
 import org.eclipse.glsp.graph.GModelElement;
 import org.eclipse.glsp.graph.GModelRoot;
+import org.eclipse.glsp.graph.GNode;
 import org.eclipse.glsp.graph.GPoint;
 import org.eclipse.glsp.graph.GraphPackage;
 import org.eclipse.glsp.graph.gson.EnumTypeAdapter;
@@ -64,6 +66,7 @@ import org.eclipse.glsp.api.di.GLSPModule;
 import org.eclipse.glsp.api.factory.GraphGsonConfiguratorFactory;
 import org.eclipse.glsp.api.json.*;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -109,6 +112,131 @@ public abstract class DiffComponent {
 
 	public void setMapper(DiffMapper mapper) {
 		this.mapper = mapper;
+	}
+	
+	protected Comparison mergeSingleChange(String left, String right, String origin, String elem, boolean revert)
+			throws InvalidParametersException, IOException {
+		if (left == null || right == null) {
+			throw new InvalidParametersException("At least two valid models are required for comparison");
+		}
+
+		ResourceSet resourceSet1 = new ResourceSetImpl();
+		ResourceSet resourceSet2 = new ResourceSetImpl();
+		UMLResourcesUtil.init(resourceSet1);
+		UMLResourcesUtil.init(resourceSet2);
+		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
+		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
+
+		resourceSet1.createResource(URI.createFileURI(left));
+		resourceSet2.createResource(URI.createFileURI(right));
+
+		/*
+		 * load(left, resourceSet1); load(right, resourceSet2);
+		 */
+
+		// Configure EMF Compare
+		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
+		IComparisonFactory comparisonFactory = new DefaultComparisonFactory(new DefaultEqualityHelperFactory());
+		IMatchEngine.Factory matchEngineFactory = new MatchEngineFactoryImpl(matcher, comparisonFactory);
+		matchEngineFactory.setRanking(20);
+		IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
+		matchEngineRegistry.add(matchEngineFactory);
+		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
+
+		// Compare the models
+		IComparisonScope scope = null;
+		if (origin != null) {
+			ResourceSet resourceSet3 = new ResourceSetImpl();
+			UMLResourcesUtil.init(resourceSet3);
+			// load(origin, resourceSet3);
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
+		} else {
+			if(revert == false) {
+				String tmp = left;
+				left = right;
+				right = tmp;
+			}
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
+		}
+
+		List<Match> submatches = new ArrayList<Match>();
+		Comparison comparison = comparator.compare(scope);
+		Match ggraph = null;
+		for (Match match : comparison.getMatches()) {
+			if (match.getLeft() != null) {
+				if (match.getLeft() instanceof GGraphImpl) {
+					submatches = match.getSubmatches();
+					break;
+				}
+			}
+		}
+		
+		List<Diff> toBeMerged = new ArrayList<>();
+		for(Diff d: comparison.getDifferences()) {
+			if(d instanceof ReferenceChangeSpec) {
+				ReferenceChangeSpec r = (ReferenceChangeSpec)d;
+				if(r.getValue() instanceof GModelElement) {
+					if(((GModelElement)r.getValue()).getId().equals(elem)) {
+						toBeMerged.add(d);
+						break;
+					}
+				}
+				
+			}
+		}
+
+		for(Match sm: submatches) {
+			if(sm.getLeft() instanceof GModelElement &&((GModelElement)sm.getLeft()).getId().equals(elem)) {
+				toBeMerged.addAll(Lists.newArrayList(sm.getAllDifferences()));
+				break;
+			}
+		}
+		
+
+		IMerger merger = new ReferenceChangeMerger();
+		IMerger attributeMerger = new AttributeChangeMerger();
+		Notifier rightResource = scope.getRight();
+		Notifier leftResource = scope.getLeft();
+		try {
+			for(Diff tbm: toBeMerged) {
+				if(merger.isMergerFor(tbm)) {
+					ReferenceChangeSpec ref = (ReferenceChangeSpec)tbm;
+					try {
+						merger.copyLeftToRight(tbm, new BasicMonitor());
+					} catch(NullPointerException e) {
+						System.out.println(ref.getValue());
+						e.printStackTrace();
+					}
+				} else if(attributeMerger.isMergerFor(tbm)) {
+					attributeMerger.copyLeftToRight(tbm, new BasicMonitor());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (rightResource instanceof GGraphImpl && leftResource instanceof GGraphImpl) {
+			gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+			gsonConfigurator.withTypes(getModelTypes());
+
+			GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+
+			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+			String jsonInString = gson.toJson((GGraphImpl) rightResource);
+			Writer writer = writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGEDSINGLE.wf");
+			gson.toJson((GGraphImpl) rightResource, writer);
+			
+		    
+	        
+	        writer.flush(); //flush data to file   <---
+	        writer.close();
+		}
+
+		// check that models are equal after batch merging
+		Comparison assertionComparison = EMFCompare.builder().build().compare(scope);
+		EList<Diff> assertionDifferences = assertionComparison.getDifferences();
+		System.out.println("after batch merging: " + assertionDifferences.size());
+		return assertionComparison;
 	}
 
 	protected Comparison merge(String left, String right, String origin)
@@ -156,7 +284,8 @@ public abstract class DiffComponent {
 		for (Match match : comparison.getMatches()) {
 			if (match.getLeft() != null) {
 				//if (match.getLeft() instanceof GGraphImpl) {
-					differences = match.getDifferences();
+					//differences.addAll(match.getDifferences());
+				differences = match.getDifferences();
 					//break;
 				//}
 			}
@@ -170,11 +299,16 @@ public abstract class DiffComponent {
 		// IMerger.Registry mergerRegistry =
 		// IMerger.RegistryImpl.createStandaloneInstance();
 		IMerger merger = new ReferenceChangeMerger();
+		IMerger attributeMerger = new AttributeChangeMerger();
 		
 		try {
 			for (Diff diff : differences) {
 				//copyChildren(merger, diff, comparison.getDifferences());
-				merger.copyLeftToRight(diff, new BasicMonitor());
+				if(merger.isMergerFor(diff)) {
+					merger.copyLeftToRight(diff, new BasicMonitor());
+				} else if(attributeMerger.isMergerFor(diff)) {
+					attributeMerger.copyLeftToRight(diff, new BasicMonitor());
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,12 +318,13 @@ public abstract class DiffComponent {
 			gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
 			gsonConfigurator.withTypes(getModelTypes());
 
-			GsonBuilder builder = new GsonBuilder();
+			GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
 
 			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
 			String jsonInString = gson.toJson((GGraphImpl) rightResource);
+			//Writer writer = new FileWriter(left.replaceAll(".wf", "") + "_MERGED.wf");
 			Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
-		    
+
 	        gson.toJson((GGraphImpl) rightResource, writer);
 	        writer.flush(); //flush data to file   <---
 	        writer.close();
@@ -385,5 +520,8 @@ public abstract class DiffComponent {
 	public ComparisonDto getMerge(String left, String right) throws InvalidParametersException, IOException {
 		return getMerge(left, right, null);
 	}
+
+	public abstract ComparisonDto getMergeSingleChange(String left, String right, String origin, String elem,
+			boolean revert);
 
 }

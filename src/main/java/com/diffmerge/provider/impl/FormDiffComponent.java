@@ -95,4 +95,13 @@ public class FormDiffComponent extends DiffComponent{
 		
 	}
 
+	@Override
+	public ComparisonDto getMergeSingleChange(String left, String right, String origin, String elem, boolean revert) {
+		Comparison comparison = (Comparison) getMergeSingleChange(left, right, origin, elem, revert);
+		
+		ComparisonDto comparisonDto = new ComparisonDto();
+		
+		return comparisonDto;
+	}
+
 }

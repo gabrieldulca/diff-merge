@@ -79,6 +79,19 @@ public class DiffController {
 	    }
 	    
 	    @GET
+	    @Path("mergesingle/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getMergeSingleChangeWf(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2, @QueryParam("elem") String elem, @QueryParam("revert") boolean revert) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getMergeSingleChange(file1, file2, null, type, elem, revert);
+	    }
+	    
+	    @GET
 	    @Path("compareThreeWay/{type}")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto get3WDiffWf(@PathParam("type") String type, @QueryParam("base") String base, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
