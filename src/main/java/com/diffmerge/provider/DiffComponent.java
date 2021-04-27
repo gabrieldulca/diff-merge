@@ -142,6 +142,7 @@ public abstract class DiffComponent {
 		IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
 		matchEngineRegistry.add(matchEngineFactory);
 		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
+		
 
 		// Compare the models
 		IComparisonScope scope = null;
@@ -158,6 +159,24 @@ public abstract class DiffComponent {
 			}
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
+		
+		gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+		gsonConfigurator.withTypes(getModelTypes());
+
+		GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+
+		Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+		
+		String jsonInString = gson.toJson((GGraphImpl) scope.getRight());
+		File unmergedFile = new File(right.replaceAll(".wf", "") + "_UNMERGED.wf");
+		if (!unmergedFile.exists()){
+			Writer writer = new FileWriter(unmergedFile);
+			gson.toJson((GGraphImpl) scope.getRight(), writer);
+	        
+	        writer.flush(); //flush data to file   <---
+		
+		}
+		
 
 		List<Match> submatches = new ArrayList<Match>();
 		Comparison comparison = comparator.compare(scope);
@@ -216,14 +235,9 @@ public abstract class DiffComponent {
 		}
 		
 		if (rightResource instanceof GGraphImpl && leftResource instanceof GGraphImpl) {
-			gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
-			gsonConfigurator.withTypes(getModelTypes());
-
-			GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
-
-			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
-			String jsonInString = gson.toJson((GGraphImpl) rightResource);
-			Writer writer = writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGEDSINGLE.wf");
+			
+			jsonInString = gson.toJson((GGraphImpl) rightResource);
+			FileWriter writer = new FileWriter(right);
 			gson.toJson((GGraphImpl) rightResource, writer);
 			
 		    
