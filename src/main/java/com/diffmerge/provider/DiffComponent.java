@@ -6,10 +6,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicMonitor;
@@ -537,5 +543,41 @@ public abstract class DiffComponent {
 
 	public abstract ComparisonDto getMergeSingleChange(String left, String right, String origin, String elem,
 			boolean revert);
+
+	public void getSave(String left, String right, String origin) {
+		try {
+			Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf").substring(1)));
+			Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf").substring(1)));
+		
+		if(origin != null) {
+			Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf").substring(1)));
+		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void getRevert(String left, String right, String origin) {
+		revertFile(left);
+		revertFile(right);
+		if(origin != null) {
+			revertFile(origin);
+		}
+	}
+	
+	public void revertFile(String filePath) {
+		Path toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf").substring(1));
+	    Path destination = Paths.get(filePath.substring(1));
+	    try {
+	    	if(Files.exists(toBeCopied)) {
+	    		Files.copy(toBeCopied, destination, StandardCopyOption.REPLACE_EXISTING);
+	    		Files.deleteIfExists(toBeCopied);
+	    	}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

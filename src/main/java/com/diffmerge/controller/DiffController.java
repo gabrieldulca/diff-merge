@@ -2,11 +2,14 @@ package main.java.com.diffmerge.controller;
 import java.util.Collections;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.eclipse.jetty.http.HttpStatus;
 
 import main.java.com.diffmerge.dto.ComparisonDto;
 import main.java.com.diffmerge.service.DiffManagerService;
@@ -76,6 +79,32 @@ public class DiffController {
 	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
 	    	
 	        return diffManagerService.getMerge(file1, file2, null, type);
+	    }
+	    
+	    @GET
+	    @Path("revert/{type}")
+	    public ComparisonDto getRevert(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        diffManagerService.getRevert(file1, file2, null, type);
+	        return diffManagerService.getDiff(file1, file2, null, type);
+        }
+	    
+	    @GET
+	    @Path("save/{type}")
+	    public ComparisonDto getSave(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        diffManagerService.getSave(file1, file2, null, type);
+	        return diffManagerService.getDiff(file1, file2, null, type);
 	    }
 	    
 	    @GET
