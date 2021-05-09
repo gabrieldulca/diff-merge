@@ -180,7 +180,7 @@ public abstract class DiffComponent {
 			gson.toJson((GGraphImpl) scope.getRight(), writer);
 	        
 	        writer.flush(); //flush data to file   <---
-		
+	        writer.close();
 		}
 		
 
@@ -466,7 +466,7 @@ public abstract class DiffComponent {
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
-
+		
 		return comparator.compare(scope);
 	}
 
@@ -504,6 +504,12 @@ public abstract class DiffComponent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			jsonReader.close();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

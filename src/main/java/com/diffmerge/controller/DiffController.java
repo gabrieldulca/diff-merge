@@ -83,6 +83,7 @@ public class DiffController {
 	    
 	    @GET
 	    @Path("revert/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto getRevert(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
 	    	
 	    	System.out.println("First file path : " + file1);
@@ -96,6 +97,7 @@ public class DiffController {
 	    
 	    @GET
 	    @Path("save/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto getSave(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
 	    	
 	    	System.out.println("First file path : " + file1);
