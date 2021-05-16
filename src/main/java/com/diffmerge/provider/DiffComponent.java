@@ -552,11 +552,11 @@ public abstract class DiffComponent {
 
 	public void getSave(String left, String right, String origin) {
 		try {
-			Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf").substring(1)));
-			Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf").substring(1)));
+			Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf")));
+			Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf")));
 		
 		if(origin != null) {
-			Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf").substring(1)));
+			Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf")));
 		}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -573,8 +573,8 @@ public abstract class DiffComponent {
 	}
 	
 	public void revertFile(String filePath) {
-		Path toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf").substring(1));
-	    Path destination = Paths.get(filePath.substring(1));
+		Path toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf"));
+	    Path destination = Paths.get(filePath);
 	    try {
 	    	if(Files.exists(toBeCopied)) {
 	    		Files.copy(toBeCopied, destination, StandardCopyOption.REPLACE_EXISTING);

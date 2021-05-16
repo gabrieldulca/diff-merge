@@ -96,6 +96,20 @@ public class DiffController {
         }
 	    
 	    @GET
+	    @Path("revert3w/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getRevert3w(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("base") String base, @QueryParam("file2") String file2) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        diffManagerService.getRevert(file1, file2, base, type);
+	        return diffManagerService.getDiff(file1, file2, base, type);
+        }
+	    
+	    @GET
 	    @Path("save/{type}")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto getSave(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {

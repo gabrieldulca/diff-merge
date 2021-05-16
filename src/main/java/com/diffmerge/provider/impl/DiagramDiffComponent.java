@@ -137,10 +137,32 @@ public class DiagramDiffComponent extends DiffComponent {
 		}
 		matchDto.setDiffs(getCurrentDiffs(match));
 		List<MatchDto> currentSubMatches = getCurrentSubMatches(match, threeWay);
-		if(currentSubMatches.size()>0) {
-			matchDto.setSubMatches(currentSubMatches);
-		}
+		// only regard changes in children for elements that are not added or deleted
+		if(match.getLeft() != null && match.getRight() != null) {
+			if(currentSubMatches.size()>0) {
+				List<DiffDto> smDiffList = new ArrayList<DiffDto>();
+				if(matchDto.getDiffs()!= null) {
+					smDiffList.addAll(matchDto.getDiffs());
+				}
+				for(int i= 0; i < currentSubMatches.size(); i++) {
+					if(currentSubMatches.get(i).getLeft() != null && currentSubMatches.get(i).getRight() != null) {
+						if(currentSubMatches.get(i).getDiffs()!= null) {
+							smDiffList.addAll(currentSubMatches.get(i).getDiffs());
+							if(!currentSubMatches.get(i).getLeft().getType().startsWith("task") 
+									&& !currentSubMatches.get(i).getLeft().getType().startsWith("edge")) {
+								currentSubMatches.get(i).setDiffs(null);
+							}
+						}
+					}
+				}
+				if(!smDiffList.isEmpty()) {
+					// set the diffs of submatches to the parrent
+					matchDto.setDiffs(smDiffList);
+				}
+				matchDto.setSubMatches(currentSubMatches);
+			}
 		
+		}
 		return matchDto;
 		
 	}

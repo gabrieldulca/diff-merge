@@ -133,7 +133,9 @@ public class DiagramDiffMapper extends DiffMapper {
 		ModelElementDto modelElementDto = new ModelElementDto();
 		// for ggraph models
 		if(modelElement instanceof GCompartment) {
-			return null;
+			GCompartment mclass = (GCompartment) modelElement; 
+			modelElementDto.setId(mclass.getId()); 
+			modelElementDto.setType(mclass.getType()); 
 		} else if(modelElement instanceof GGraph) {
 			GGraph mclass = (GGraph) modelElement;
 			modelElementDto.setId(mclass.getId());
@@ -147,7 +149,9 @@ public class DiagramDiffMapper extends DiffMapper {
 			modelElementDto.setId(mclass.getId());
 			modelElementDto.setType(mclass.getType());
 		} else if(modelElement instanceof GLabel) {
-			return null;
+			GLabel mclass = (GLabel) modelElement; 
+			modelElementDto.setId(mclass.getId()); 
+			modelElementDto.setType(mclass.getType()); 
 		} else if(modelElement instanceof GDimension) {
 			return null;
 		} else if(modelElement instanceof GPoint) {
