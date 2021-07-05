@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -555,9 +556,20 @@ public abstract class DiffComponent {
 			Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf")));
 			Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf")));
 		
-		if(origin != null) {
-			Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf")));
-		}
+			if(origin != null) {
+				Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf")));
+			}
+		} catch(InvalidPathException e0) {
+			try {
+				Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf").substring(1)));
+				Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf").substring(1)));
+				if(origin != null) {
+					Files.deleteIfExists(Paths.get(origin.replace(".wf", "_UNMERGED.wf").substring(1)));
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -573,8 +585,19 @@ public abstract class DiffComponent {
 	}
 	
 	public void revertFile(String filePath) {
-		Path toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf"));
-	    Path destination = Paths.get(filePath);
+		
+		
+		Path toBeCopied;
+		Path destination;
+		try {
+			toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf"));
+			destination = Paths.get(filePath);
+			System.out.println("LINUX");
+		} catch(InvalidPathException e) {
+			toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf").substring(1));
+    	    destination = Paths.get(filePath.substring(1));
+    	    System.out.println("WINDOWS");
+		}
 	    try {
 	    	if(Files.exists(toBeCopied)) {
 	    		Files.copy(toBeCopied, destination, StandardCopyOption.REPLACE_EXISTING);

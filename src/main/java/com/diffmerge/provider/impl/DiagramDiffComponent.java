@@ -2,6 +2,7 @@ package main.java.com.diffmerge.provider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.emf.common.util.BasicMonitor;
@@ -89,6 +90,7 @@ public class DiagramDiffComponent extends DiffComponent {
 		List<Diff> diffList = match.getDifferences();
 		List<DiffDto> diffDtoList = new ArrayList<DiffDto>();
 		for(Diff diff:diffList) {
+			//TODO remove if position changes need to be displayed
 			if(diff.getKind().getName().equals("DELETE")) {
 				if(diff.getSource().getName().equals("LEFT") && match.getLeft() != null) {
 					continue;
@@ -97,6 +99,12 @@ public class DiagramDiffComponent extends DiffComponent {
 				}
 			} else if(diff.getKind().getName().equals("MOVE")) {
 				continue;
+			} else if(diff.getKind().getName().equals("ADD")) {
+				if(diff.getSource().getName().equals("LEFT") && match.getRight() != null) {
+					continue;
+				} else if(diff.getSource().getName().equals("RIGHT") && match.getLeft() != null) {
+					continue;
+				}
 			}
 			DiffDto diffDto = getMapper().toDiffDto(diff);
 			if(diffDto != null) {
