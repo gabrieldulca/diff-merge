@@ -14,6 +14,10 @@ public class ConflictDto {
 	
 	private KindDto kind;
 	
+	public ConflictDto(KindDto kind) {
+		this.kind = kind;
+	}
+	
 	public KindDto getKind() {
 		return kind;
 	}

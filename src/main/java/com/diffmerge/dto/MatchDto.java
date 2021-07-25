@@ -63,6 +63,14 @@ public class MatchDto {
 				+ ", diffs=" + diffs + "]";
 	}
 
-	
+	public String getAvailableMatchId() {
+		if(this.origin != null && this.origin.getId() != null) {
+			return this.origin.getId();
+		} else if(this.left != null && this.left.getId() != null) {
+			return this.left.getId();
+		} else {
+			return this.right.getId();
+		}
+	}
 
 }

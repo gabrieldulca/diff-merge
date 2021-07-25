@@ -1,6 +1,7 @@
 package main.java.com.diffmerge.mapper;
 
 import org.eclipse.emf.compare.AttributeChange;
+import org.eclipse.emf.compare.ConflictKind;
 import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.DifferenceKind;
 import org.eclipse.emf.compare.ReferenceChange;
@@ -28,6 +29,7 @@ import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Class;
 
 import main.java.com.diffmerge.dto.AttributeDto;
+import main.java.com.diffmerge.dto.ConflictDto;
 import main.java.com.diffmerge.dto.DiffDto;
 import main.java.com.diffmerge.dto.KindDto;
 import main.java.com.diffmerge.dto.ModelElementDto;
@@ -124,7 +126,10 @@ public class DiagramDiffMapper extends DiffMapper {
 		}
 		DifferenceKind kind = difference.getKind();
 		diffDto.setKind(KindDto.valueOf(kind.getName()));
-		
+		diffDto.setSource(difference.getSource().getName());
+		if(difference.getConflict() != null && difference.getConflict().getKind() == ConflictKind.REAL) {
+			diffDto.setConflict(new ConflictDto(KindDto.REAL));
+		}
 		return diffDto;
 	}
 

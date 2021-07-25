@@ -86,7 +86,7 @@ public class DiagramDiffComponent extends DiffComponent {
 		
 	}
 	
-	public List<DiffDto> getCurrentDiffs(Match match) {
+	public List<DiffDto> getCurrentDiffs(Match match, String matchId) {
 		List<Diff> diffList = match.getDifferences();
 		List<DiffDto> diffDtoList = new ArrayList<DiffDto>();
 		for(Diff diff:diffList) {
@@ -107,7 +107,8 @@ public class DiagramDiffComponent extends DiffComponent {
 				}
 			}
 			DiffDto diffDto = getMapper().toDiffDto(diff);
-			if(diffDto != null) {
+			diffDto.setMatchId(matchId);
+			if(diffDto != null && !(diffDtoList.contains(diffDto))) {
 				diffDtoList.add(diffDto);
 			}
 		}
@@ -143,7 +144,7 @@ public class DiagramDiffComponent extends DiffComponent {
 		if(matchDto.getLeft() == null && matchDto.getRight() == null) {
 			return null;
 		}
-		matchDto.setDiffs(getCurrentDiffs(match));
+		matchDto.setDiffs(getCurrentDiffs(match, matchDto.getAvailableMatchId()));
 		List<MatchDto> currentSubMatches = getCurrentSubMatches(match, threeWay);
 		// only regard changes in children for elements that are not added or deleted
 		if(match.getLeft() != null && match.getRight() != null) {
