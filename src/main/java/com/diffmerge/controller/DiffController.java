@@ -82,6 +82,20 @@ public class DiffController {
 	    }
 	    
 	    @GET
+	    @Path("merge3w/{type}")
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getMergeWf(@PathParam("type") String type, @QueryParam("base") String base, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Second file path: " + file2);
+	    	System.out.println("Base file path: " + base);
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getMerge(file1, file2, base, type);
+	    }
+	    
+	    @GET
 	    @Path("revert/{type}")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public ComparisonDto getRevert(@PathParam("type") String type, @QueryParam("file1") String file1, @QueryParam("file2") String file2) throws Exception {

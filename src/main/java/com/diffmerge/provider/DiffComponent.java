@@ -127,19 +127,6 @@ public abstract class DiffComponent {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
 
-		ResourceSet resourceSet1 = new ResourceSetImpl();
-		ResourceSet resourceSet2 = new ResourceSetImpl();
-		UMLResourcesUtil.init(resourceSet1);
-		UMLResourcesUtil.init(resourceSet2);
-		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-
-		resourceSet1.createResource(URI.createFileURI(left));
-		resourceSet2.createResource(URI.createFileURI(right));
-
-		/*
-		 * load(left, resourceSet1); load(right, resourceSet2);
-		 */
 
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
@@ -266,20 +253,7 @@ public abstract class DiffComponent {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
 
-		ResourceSet resourceSet1 = new ResourceSetImpl();
-		ResourceSet resourceSet2 = new ResourceSetImpl();
-		UMLResourcesUtil.init(resourceSet1);
-		UMLResourcesUtil.init(resourceSet2);
-		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-
-		resourceSet1.createResource(URI.createFileURI(left));
-		resourceSet2.createResource(URI.createFileURI(right));
-
-		/*
-		 * load(left, resourceSet1); load(right, resourceSet2);
-		 */
-
+		
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
 		IComparisonFactory comparisonFactory = new DefaultComparisonFactory(new DefaultEqualityHelperFactory());
@@ -292,10 +266,7 @@ public abstract class DiffComponent {
 		// Compare the models
 		IComparisonScope scope = null;
 		if (origin != null) {
-			ResourceSet resourceSet3 = new ResourceSetImpl();
-			UMLResourcesUtil.init(resourceSet3);
-			// load(origin, resourceSet3);
-			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(origin));
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
@@ -304,11 +275,18 @@ public abstract class DiffComponent {
 		Comparison comparison = comparator.compare(scope);
 		for (Match match : comparison.getMatches()) {
 			if (match.getLeft() != null) {
-				//if (match.getLeft() instanceof GGraphImpl) {
-					//differences.addAll(match.getDifferences());
-				differences = match.getDifferences();
-					//break;
-				//}
+				differences.addAll(match.getDifferences());
+				//break;
+			}
+		}
+		if (origin != null) {
+			scope = EMFCompare.createDefaultScope(loadResource(right), loadResource(origin));
+			comparison = comparator.compare(scope);
+			for (Match match : comparison.getMatches()) {
+				if (match.getLeft() != null) {
+					differences.addAll(match.getDifferences());
+					break;
+				}
 			}
 		}
 		for (Diff diff : differences) {
@@ -321,10 +299,11 @@ public abstract class DiffComponent {
 		// IMerger.RegistryImpl.createStandaloneInstance();
 		IMerger merger = new ReferenceChangeMerger();
 		IMerger attributeMerger = new AttributeChangeMerger();
-		
+		System.out.println(left + " -> " + right);
 		try {
 			for (Diff diff : differences) {
 				//copyChildren(merger, diff, comparison.getDifferences());
+				System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+ diff);
 				if(merger.isMergerFor(diff)) {
 					merger.copyLeftToRight(diff, new BasicMonitor());
 				} else if(attributeMerger.isMergerFor(diff)) {
@@ -334,21 +313,41 @@ public abstract class DiffComponent {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Notifier rightResource = scope.getRight();
-		if (rightResource instanceof GGraphImpl) {
-			gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
-			gsonConfigurator.withTypes(getModelTypes());
-
-			GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
-
-			Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
-			String jsonInString = gson.toJson((GGraphImpl) rightResource);
-			//Writer writer = new FileWriter(left.replaceAll(".wf", "") + "_MERGED.wf");
-			Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
-
-	        gson.toJson((GGraphImpl) rightResource, writer);
-	        writer.flush(); //flush data to file   <---
-	        writer.close();
+		
+		if(origin == null) {
+			Notifier rightResource = scope.getRight();
+			if (rightResource instanceof GGraphImpl) {
+				gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+				gsonConfigurator.withTypes(getModelTypes());
+	
+				GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+	
+				Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+				String jsonInString = gson.toJson((GGraphImpl) rightResource);
+				//Writer writer = new FileWriter(left.replaceAll(".wf", "") + "_MERGED.wf");
+				Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
+	
+		        gson.toJson((GGraphImpl) rightResource, writer);
+		        writer.flush(); //flush data to file   <---
+		        writer.close();
+			}
+		} else {
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
+			Notifier baseResource = scope.getOrigin();
+			if (baseResource instanceof GGraphImpl) {
+				gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+				gsonConfigurator.withTypes(getModelTypes());
+	
+				GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+	
+				Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+				String jsonInString = gson.toJson((GGraphImpl) baseResource);
+				Writer writer = new FileWriter(origin.replaceAll(".wf", "") + "_MERGED.wf");
+	
+		        gson.toJson((GGraphImpl) baseResource, writer);
+		        writer.flush(); 
+		        writer.close();
+			}
 		}
 
 		// check that models are equal after batch merging
@@ -434,19 +433,6 @@ public abstract class DiffComponent {
 			throw new InvalidParametersException("At least two valid models are required for comparison");
 		}
 
-		ResourceSet resourceSet1 = new ResourceSetImpl();
-		ResourceSet resourceSet2 = new ResourceSetImpl();
-		UMLResourcesUtil.init(resourceSet1);
-		UMLResourcesUtil.init(resourceSet2);
-		resourceSet1.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-		resourceSet2.getPackageRegistry().put(GraphPackage.eNS_URI, GraphPackage.eINSTANCE);
-
-		resourceSet1.createResource(URI.createFileURI(left));
-		resourceSet2.createResource(URI.createFileURI(left));
-
-		/*
-		 * load(left, resourceSet1); load(right, resourceSet2);
-		 */
 
 		// Configure EMF Compare
 		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
