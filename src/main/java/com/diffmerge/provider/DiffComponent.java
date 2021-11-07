@@ -21,11 +21,13 @@ import java.util.Map;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicMonitor;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.compare.Comparison;
 import org.eclipse.emf.compare.Diff;
 import org.eclipse.emf.compare.EMFCompare;
 import org.eclipse.emf.compare.Match;
+import org.eclipse.emf.compare.internal.spec.MatchSpec;
 import org.eclipse.emf.compare.internal.spec.ReferenceChangeSpec;
 import org.eclipse.emf.compare.match.DefaultComparisonFactory;
 import org.eclipse.emf.compare.match.DefaultEqualityHelperFactory;
@@ -51,6 +53,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.glsp.graph.GCompartment;
 import org.eclipse.glsp.graph.GDimension;
 import org.eclipse.glsp.graph.GGraph;
+import org.eclipse.glsp.graph.GLabel;
 import org.eclipse.glsp.graph.GModelElement;
 import org.eclipse.glsp.graph.GModelRoot;
 import org.eclipse.glsp.graph.GNode;
@@ -61,6 +64,7 @@ import org.eclipse.glsp.graph.gson.GGraphGsonConfigurator;
 import org.eclipse.glsp.graph.impl.GCompartmentImpl;
 import org.eclipse.glsp.graph.impl.GGraphImpl;
 import org.eclipse.glsp.graph.impl.GNodeImpl;
+import org.eclipse.glsp.graph.impl.StringToObjectMapEntryImpl;
 
 import static org.eclipse.glsp.graph.GraphPackage.Literals.*;
 import org.eclipse.uml2.uml.internal.resource.UMLResourceFactoryImpl;
@@ -74,6 +78,7 @@ import org.eclipse.glsp.api.factory.GraphGsonConfiguratorFactory;
 import org.eclipse.glsp.api.json.*;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset.Entry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -263,10 +268,15 @@ public abstract class DiffComponent {
 		matchEngineRegistry.add(matchEngineFactory);
 		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
 
+		
+		EMFCompare emfCompare = EMFCompare.builder().build();
+		
+		
+		
 		// Compare the models
 		IComparisonScope scope = null;
 		if (origin != null) {
-			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(origin));
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
 		} else {
 			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
 		}
@@ -275,11 +285,12 @@ public abstract class DiffComponent {
 		Comparison comparison = comparator.compare(scope);
 		for (Match match : comparison.getMatches()) {
 			if (match.getLeft() != null) {
-				differences.addAll(match.getDifferences());
-				//break;
+				differences = match.getDifferences();
+				break;
 			}
 		}
-		if (origin != null) {
+
+		/*if (origin != null) {
 			scope = EMFCompare.createDefaultScope(loadResource(right), loadResource(origin));
 			comparison = comparator.compare(scope);
 			for (Match match : comparison.getMatches()) {
@@ -288,10 +299,12 @@ public abstract class DiffComponent {
 					break;
 				}
 			}
-		}
+		}*/
+		System.out.println("----------------");
 		for (Diff diff : differences) {
 			System.out.println(diff.toString());
 		}
+		System.out.println("----------------");
 
 		// Let's merge every single diff
 		// IMerger.Registry mergerRegistry = new IMerger.RegistryImpl();
@@ -300,16 +313,22 @@ public abstract class DiffComponent {
 		IMerger merger = new ReferenceChangeMerger();
 		IMerger attributeMerger = new AttributeChangeMerger();
 		System.out.println(left + " -> " + right);
+		System.out.println(" ORIGIN " + origin);
 		try {
 			for (Diff diff : differences) {
-				//copyChildren(merger, diff, comparison.getDifferences());
+				
 				System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+ diff);
 				if(merger.isMergerFor(diff)) {
+					copyChildren(merger, diff, comparison.getDifferences());
 					merger.copyLeftToRight(diff, new BasicMonitor());
 				} else if(attributeMerger.isMergerFor(diff)) {
+					copyChildren(attributeMerger, diff, comparison.getDifferences());
 					attributeMerger.copyLeftToRight(diff, new BasicMonitor());
 				}
 			}
+			IBatchMerger batchmerger = new BatchMerger(IMerger.RegistryImpl.createStandaloneInstance());
+		    		
+			//batchmerger.copyAllLeftToRight(differences, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -325,26 +344,26 @@ public abstract class DiffComponent {
 				Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
 				String jsonInString = gson.toJson((GGraphImpl) rightResource);
 				//Writer writer = new FileWriter(left.replaceAll(".wf", "") + "_MERGED.wf");
-				Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
+				Writer writer = new FileWriter(left.replaceAll(".wf", "") + "_MERGED.wf");
 	
 		        gson.toJson((GGraphImpl) rightResource, writer);
 		        writer.flush(); //flush data to file   <---
 		        writer.close();
 			}
 		} else {
-			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
-			Notifier baseResource = scope.getOrigin();
-			if (baseResource instanceof GGraphImpl) {
+			//scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
+			Notifier rightResource = scope.getRight();
+			if (rightResource instanceof GGraphImpl) {
 				gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
 				gsonConfigurator.withTypes(getModelTypes());
 	
 				GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
 	
 				Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
-				String jsonInString = gson.toJson((GGraphImpl) baseResource);
-				Writer writer = new FileWriter(origin.replaceAll(".wf", "") + "_MERGED.wf");
+				String jsonInString = gson.toJson((GGraphImpl) rightResource);
+				Writer writer = new FileWriter(right.replaceAll(".wf", "") + "_MERGED.wf");
 	
-		        gson.toJson((GGraphImpl) baseResource, writer);
+		        gson.toJson((GGraphImpl) rightResource, writer);
 		        writer.flush(); 
 		        writer.close();
 			}
@@ -361,26 +380,61 @@ public abstract class DiffComponent {
 		if(diff == null) {
 			return;
 		}
-		merger.copyLeftToRight(diff, new BasicMonitor());
-		if(diff instanceof ReferenceChangeSpec) {
-			if(((ReferenceChangeSpec) diff).getValue() instanceof GNodeImpl) {
-				GNodeImpl diffNode = (GNodeImpl) ((ReferenceChangeSpec) diff).getValue();
-				for(GModelElement child:diffNode.getChildren()) {
-					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+		
+		if(!diff.getSource().toString().equals("RIGHT")) {
+			System.out.println("MERGING "+ diff);
+			merger.copyLeftToRight(diff, new BasicMonitor());
+			if(diff instanceof ReferenceChangeSpec) {
+				if(((ReferenceChangeSpec) diff).getValue() instanceof GNodeImpl) {
+					GNodeImpl diffNode = (GNodeImpl) ((ReferenceChangeSpec) diff).getValue();
+					for(GModelElement child:diffNode.getChildren()) {
+						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+					}
+					copyChildren(merger, findDifference(diffNode.getPosition(), allDifferences), allDifferences);
+					copyChildren(merger, findDifference(diffNode.getSize(), allDifferences), allDifferences);
+				} else if(((ReferenceChangeSpec) diff).getValue() instanceof GCompartment) {
+					GCompartment diffNode = (GCompartment) ((ReferenceChangeSpec) diff).getValue();
+					if(diffNode.getLayoutOptions() != null) {
+						for(java.util.Map.Entry<String, Object> entry: diffNode.getLayoutOptions().entrySet()) {
+							copyChildren(merger, findDifference(entry, allDifferences, diffNode.getId()), allDifferences);
+						}
+					}
+					for(GModelElement child:diffNode.getChildren()) {
+						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+					} 
+				} else if(((ReferenceChangeSpec) diff).getValue() instanceof GLabel) {
+					GLabel diffNode = (GLabel) ((ReferenceChangeSpec) diff).getValue();
+					for(GModelElement child:diffNode.getChildren()) {
+						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+					} 
 				}
-				copyChildren(merger, findDifference(diffNode.getPosition(), allDifferences), allDifferences);
-				copyChildren(merger, findDifference(diffNode.getSize(), allDifferences), allDifferences);
-			} else if(((ReferenceChangeSpec) diff).getValue() instanceof GCompartment) {
-				GCompartment diffNode = (GCompartment) ((ReferenceChangeSpec) diff).getValue();
-				for(GModelElement child:diffNode.getChildren()) {
-					copyChildren(merger, findDifference(child, allDifferences), allDifferences);
-				} 
-				
-				
+				//TODO go through hierarchy till point
 			}
-			//TODO go through hierarchy till point
 		}
 	}
+	
+	private Diff findDifference(java.util.Map.Entry<String, Object> child, List<Diff> allDifferences, String parentId) {
+		if(child == null)
+			return null;
+		for(Diff d: allDifferences) {
+			if(d instanceof ReferenceChangeSpec) {
+				if(((ReferenceChangeSpec) d).getValue() instanceof StringToObjectMapEntryImpl) {
+					StringToObjectMapEntryImpl attr = (StringToObjectMapEntryImpl) ((ReferenceChangeSpec) d).getValue();
+					if(child.getKey().equals(attr.getKey())) {
+						if(child.getValue().equals(attr.getValue())) {
+							MatchSpec ms = (MatchSpec) d.eContainer();
+							GCompartment comp = (GCompartment)ms.getLeft();
+							if(comp.getId().equals(parentId)) {
+								return d;
+							}
+						}
+					}
+				}
+			}
+		}
+			return null;
+	}
+
 	private Diff findDifference(GDimension child, List<Diff> allDifferences) {
 		if(child == null)
 			return null;
@@ -421,6 +475,8 @@ public abstract class DiffComponent {
 							return d;
 					}
 				}
+			} else {
+				System.out.println(d);
 			}
 		}
 			return null;
@@ -538,7 +594,38 @@ public abstract class DiffComponent {
 			boolean revert);
 
 	public void getSave(String left, String right, String origin) {
+		Path unmerged;
+		Path merged;
+		Path destination;
 		try {
+			unmerged = Paths.get(right.replace(".wf", "_UNMERGED.wf"));
+			merged = Paths.get(right);
+			destination = Paths.get(right.replace(".wf", "_MERGED.wf"));
+			if(origin != null) {
+				unmerged = Paths.get(origin.replace(".wf", "_UNMERGED.wf"));
+				merged = Paths.get(right);
+			}
+		} catch(InvalidPathException e) {
+			unmerged = Paths.get(right.replace(".wf", "_UNMERGED.wf").substring(1));
+			merged = Paths.get(right.substring(1));
+			destination = Paths.get(right.replace(".wf", "_MERGED.wf").substring(1));
+			if(origin != null) {
+				unmerged = Paths.get(origin.replace(".wf", "_UNMERGED.wf").substring(1));
+				merged = Paths.get(origin.substring(1));
+			}
+		}
+		try {
+			if(Files.exists(merged) && Files.exists(unmerged)) {
+	    		Files.copy(merged, destination, StandardCopyOption.REPLACE_EXISTING);
+	    		Files.copy(unmerged, merged, StandardCopyOption.REPLACE_EXISTING);
+	    		Files.deleteIfExists(unmerged);
+	    	}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*try {
 			Files.deleteIfExists(Paths.get(left.replace(".wf", "_UNMERGED.wf")));
 			Files.deleteIfExists(Paths.get(right.replace(".wf", "_UNMERGED.wf")));
 		
@@ -559,7 +646,7 @@ public abstract class DiffComponent {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	public void getRevert(String left, String right, String origin) {
@@ -578,11 +665,9 @@ public abstract class DiffComponent {
 		try {
 			toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf"));
 			destination = Paths.get(filePath);
-			System.out.println("LINUX");
 		} catch(InvalidPathException e) {
 			toBeCopied = Paths.get(filePath.replace(".wf", "_UNMERGED.wf").substring(1));
     	    destination = Paths.get(filePath.substring(1));
-    	    System.out.println("WINDOWS");
 		}
 	    try {
 	    	if(Files.exists(toBeCopied)) {
