@@ -598,20 +598,22 @@ public abstract class DiffComponent {
 		Path merged;
 		Path destination;
 		try {
-			unmerged = Paths.get(right.replace(".wf", "_UNMERGED.wf"));
-			merged = Paths.get(right);
-			destination = Paths.get(right.replace(".wf", "_MERGED.wf"));
+			unmerged = Paths.get(left.replace(".wf", "_UNMERGED.wf"));
+			merged = Paths.get(left);
+			destination = Paths.get(left.replace(".wf", "_MERGED.wf"));
 			if(origin != null) {
 				unmerged = Paths.get(origin.replace(".wf", "_UNMERGED.wf"));
 				merged = Paths.get(right);
+				destination = Paths.get(right.replace(".wf", "_MERGED.wf"));
 			}
 		} catch(InvalidPathException e) {
-			unmerged = Paths.get(right.replace(".wf", "_UNMERGED.wf").substring(1));
-			merged = Paths.get(right.substring(1));
-			destination = Paths.get(right.replace(".wf", "_MERGED.wf").substring(1));
+			unmerged = Paths.get(left.replace(".wf", "_UNMERGED.wf").substring(1));
+			merged = Paths.get(left.substring(1));
+			destination = Paths.get(left.replace(".wf", "_MERGED.wf").substring(1));
 			if(origin != null) {
 				unmerged = Paths.get(origin.replace(".wf", "_UNMERGED.wf").substring(1));
 				merged = Paths.get(origin.substring(1));
+				destination = Paths.get(right.replace(".wf", "_MERGED.wf").substring(1));
 			}
 		}
 		try {
