@@ -316,14 +316,15 @@ public abstract class DiffComponent {
 		System.out.println(" ORIGIN " + origin);
 		try {
 			for (Diff diff : differences) {
-				
-				System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+ diff);
-				if(merger.isMergerFor(diff)) {
-					copyChildren(merger, diff, comparison.getDifferences());
-					merger.copyLeftToRight(diff, new BasicMonitor());
-				} else if(attributeMerger.isMergerFor(diff)) {
-					copyChildren(attributeMerger, diff, comparison.getDifferences());
-					attributeMerger.copyLeftToRight(diff, new BasicMonitor());
+				if(!diff.getSource().toString().equals("RIGHT")) {
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!"+ diff);
+					if(merger.isMergerFor(diff)) {
+						copyChildren(attributeMerger, merger, diff, comparison.getDifferences());
+						merger.copyLeftToRight(diff, new BasicMonitor());
+					} else if(attributeMerger.isMergerFor(diff)) {
+						copyChildren(attributeMerger, merger, diff, comparison.getDifferences());
+						attributeMerger.copyLeftToRight(diff, new BasicMonitor());
+					}
 				}
 			}
 			IBatchMerger batchmerger = new BatchMerger(IMerger.RegistryImpl.createStandaloneInstance());
@@ -376,36 +377,40 @@ public abstract class DiffComponent {
 		return assertionComparison;
 	}
 
-	private void copyChildren(IMerger merger, Diff diff, List<Diff> allDifferences) {
+	private void copyChildren(IMerger attributeMerger, IMerger merger, Diff diff, List<Diff> allDifferences) {
 		if(diff == null) {
 			return;
 		}
 		
 		if(!diff.getSource().toString().equals("RIGHT")) {
 			System.out.println("MERGING "+ diff);
-			merger.copyLeftToRight(diff, new BasicMonitor());
+			if(merger.isMergerFor(diff)) {
+				merger.copyLeftToRight(diff, new BasicMonitor());
+			} else {
+				attributeMerger.copyLeftToRight(diff, new BasicMonitor());
+			}
 			if(diff instanceof ReferenceChangeSpec) {
 				if(((ReferenceChangeSpec) diff).getValue() instanceof GNodeImpl) {
 					GNodeImpl diffNode = (GNodeImpl) ((ReferenceChangeSpec) diff).getValue();
 					for(GModelElement child:diffNode.getChildren()) {
-						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+						copyChildren(attributeMerger, merger, findDifference(child, allDifferences), allDifferences);
 					}
-					copyChildren(merger, findDifference(diffNode.getPosition(), allDifferences), allDifferences);
-					copyChildren(merger, findDifference(diffNode.getSize(), allDifferences), allDifferences);
+					copyChildren(attributeMerger, merger, findDifference(diffNode.getPosition(), allDifferences), allDifferences);
+					copyChildren(attributeMerger, merger, findDifference(diffNode.getSize(), allDifferences), allDifferences);
 				} else if(((ReferenceChangeSpec) diff).getValue() instanceof GCompartment) {
 					GCompartment diffNode = (GCompartment) ((ReferenceChangeSpec) diff).getValue();
 					if(diffNode.getLayoutOptions() != null) {
 						for(java.util.Map.Entry<String, Object> entry: diffNode.getLayoutOptions().entrySet()) {
-							copyChildren(merger, findDifference(entry, allDifferences, diffNode.getId()), allDifferences);
+							copyChildren(attributeMerger,merger, findDifference(entry, allDifferences, diffNode.getId()), allDifferences);
 						}
 					}
 					for(GModelElement child:diffNode.getChildren()) {
-						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+						copyChildren(attributeMerger, merger, findDifference(child, allDifferences), allDifferences);
 					} 
 				} else if(((ReferenceChangeSpec) diff).getValue() instanceof GLabel) {
 					GLabel diffNode = (GLabel) ((ReferenceChangeSpec) diff).getValue();
 					for(GModelElement child:diffNode.getChildren()) {
-						copyChildren(merger, findDifference(child, allDifferences), allDifferences);
+						copyChildren(attributeMerger, merger, findDifference(child, allDifferences), allDifferences);
 					} 
 				}
 				//TODO go through hierarchy till point
@@ -603,7 +608,7 @@ public abstract class DiffComponent {
 			destination = Paths.get(left.replace(".wf", "_MERGED.wf"));
 			if(origin != null) {
 				unmerged = Paths.get(origin.replace(".wf", "_UNMERGED.wf"));
-				merged = Paths.get(right);
+				merged = Paths.get(origin);
 				destination = Paths.get(right.replace(".wf", "_MERGED.wf"));
 			}
 		} catch(InvalidPathException e) {
