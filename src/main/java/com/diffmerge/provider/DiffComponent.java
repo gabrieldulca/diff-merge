@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,7 @@ public abstract class DiffComponent {
 
 	private String type;
 	private DiffMapper mapper;
-	private GGraphGsonConfigurator gsonConfigurator;
+	protected GGraphGsonConfigurator gsonConfigurator;
 
 	public abstract ComparisonDto getComparison(String left, String right, String origin)
 			throws InvalidParametersException, IOException;
@@ -207,6 +208,127 @@ public abstract class DiffComponent {
 			if(sm.getLeft() instanceof GModelElement &&((GModelElement)sm.getLeft()).getId().equals(elem)) {
 				toBeMerged.addAll(Lists.newArrayList(sm.getAllDifferences()));
 				break;
+			}
+		}
+		
+
+		IMerger merger = new ReferenceChangeMerger();
+		IMerger attributeMerger = new AttributeChangeMerger();
+		Notifier rightResource = scope.getRight();
+		Notifier leftResource = scope.getLeft();
+		try {
+			for(Diff tbm: toBeMerged) {
+				if(merger.isMergerFor(tbm)) {
+					ReferenceChangeSpec ref = (ReferenceChangeSpec)tbm;
+					try {
+						merger.copyLeftToRight(tbm, new BasicMonitor());
+					} catch(NullPointerException e) {
+						System.out.println(ref.getValue());
+						e.printStackTrace();
+					}
+				} else if(attributeMerger.isMergerFor(tbm)) {
+					attributeMerger.copyLeftToRight(tbm, new BasicMonitor());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (rightResource instanceof GGraphImpl && leftResource instanceof GGraphImpl) {
+			
+			jsonInString = gson.toJson((GGraphImpl) rightResource);
+			FileWriter writer = new FileWriter(right);
+			gson.toJson((GGraphImpl) rightResource, writer);
+			
+		    
+	        
+	        writer.flush(); //flush data to file   <---
+	        writer.close();
+		}
+
+		// check that models are equal after batch merging
+		Comparison assertionComparison = EMFCompare.builder().build().compare(scope);
+		EList<Diff> assertionDifferences = assertionComparison.getDifferences();
+		System.out.println("after batch merging: " + assertionDifferences.size());
+		return assertionComparison;
+	}
+	
+	protected Comparison mergeNoConflicts(String left, String right, String origin, String[] changes)
+			throws InvalidParametersException, IOException {
+		if (left == null || right == null) {
+			throw new InvalidParametersException("At least two valid models are required for comparison");
+		}
+
+
+		// Configure EMF Compare
+		IEObjectMatcher matcher = DefaultMatchEngine.createDefaultEObjectMatcher(UseIdentifiers.WHEN_AVAILABLE);
+		IComparisonFactory comparisonFactory = new DefaultComparisonFactory(new DefaultEqualityHelperFactory());
+		IMatchEngine.Factory matchEngineFactory = new MatchEngineFactoryImpl(matcher, comparisonFactory);
+		matchEngineFactory.setRanking(20);
+		IMatchEngine.Factory.Registry matchEngineRegistry = new MatchEngineFactoryRegistryImpl();
+		matchEngineRegistry.add(matchEngineFactory);
+		EMFCompare comparator = EMFCompare.builder().setMatchEngineFactoryRegistry(matchEngineRegistry).build();
+		
+
+		// Compare the models
+		IComparisonScope scope = null;
+		if (origin != null) {
+			ResourceSet resourceSet3 = new ResourceSetImpl();
+			UMLResourcesUtil.init(resourceSet3);
+			// load(origin, resourceSet3);
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right), loadResource(origin));
+		} else {
+			scope = EMFCompare.createDefaultScope(loadResource(left), loadResource(right));
+		}
+		
+		gsonConfigurator = new GGraphGsonConfigurator().withDefaultTypes();
+		gsonConfigurator.withTypes(getModelTypes());
+
+		GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+
+		Gson gson = gsonConfigurator.configureGsonBuilder(builder).create();
+		
+		String jsonInString = gson.toJson((GGraphImpl) scope.getRight());
+		File unmergedFile = new File(right.replaceAll(".wf", "") + "_UNMERGED.wf");
+		if (!unmergedFile.exists()){
+			Writer writer = new FileWriter(unmergedFile);
+			gson.toJson((GGraphImpl) scope.getRight(), writer);
+	        
+	        writer.flush(); //flush data to file   <---
+	        writer.close();
+		}
+		
+
+		List<Match> submatches = new ArrayList<Match>();
+		Comparison comparison = comparator.compare(scope);
+		Match ggraph = null;
+		for (Match match : comparison.getMatches()) {
+			if (match.getLeft() != null) {
+				if (match.getLeft() instanceof GGraphImpl) {
+					submatches = match.getSubmatches();
+					break;
+				}
+			}
+		}
+		
+		List<Diff> toBeMerged = new ArrayList<>();
+		List<String> changeList = Arrays.asList(changes);
+		for(Diff d: comparison.getDifferences()) {
+			if(d instanceof ReferenceChangeSpec) {
+				ReferenceChangeSpec r = (ReferenceChangeSpec)d;
+				if(r.getValue() instanceof GModelElement) {
+					if(changeList.contains(((GModelElement)r.getValue()).getId())) {
+						toBeMerged.add(d);
+					}
+				}
+				
+			}
+		}
+
+		for(Match sm: submatches) {
+			if(sm.getLeft() instanceof GModelElement &&changeList.contains(((GModelElement)sm.getLeft()).getId())) {
+				toBeMerged.addAll(Lists.newArrayList(sm.getAllDifferences()));
+				//break;
 			}
 		}
 		
@@ -588,6 +710,9 @@ public abstract class DiffComponent {
 
 	}
 
+	public abstract ComparisonDto getMergeNoConflicts(String left, String right, String origin, String[] changes)
+			throws InvalidParametersException, IOException;
+	
 	public abstract ComparisonDto getMerge(String left, String right, String origin)
 			throws InvalidParametersException, IOException;
 

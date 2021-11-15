@@ -102,5 +102,9 @@ public class TableDiffComponent extends DiffComponent{
 		return matchDto;
 		
 	}
+	
+	public ComparisonDto getMergeNoConflicts(String left, String right, String origin, String[] changes) {
+		return null;
+	}
 
 }

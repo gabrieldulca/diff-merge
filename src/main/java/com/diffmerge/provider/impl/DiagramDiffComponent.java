@@ -32,6 +32,35 @@ public class DiagramDiffComponent extends DiffComponent {
 	}
 	
 	
+	public ComparisonDto getMergeNoConflicts(String left, String right, String origin, String[] changes) {
+		Comparison comparison = null;
+		try {
+			comparison = mergeNoConflicts(left, right, origin, changes);
+		} catch (InvalidParametersException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ComparisonDto comparisonDto = new ComparisonDto();
+		
+		List<Match> matchList = comparison.getMatches();
+		List<MatchDto> matchDtoList = new ArrayList<MatchDto>();
+		
+		comparisonDto.setThreeWay(comparison.isThreeWay());
+		for(Match match:matchList) {
+			 MatchDto matchDto = mapMatch(match, comparison.isThreeWay());
+			 if(matchDto != null) {
+				 if(matchDto.getSubMatches()!=null) {
+					 matchDtoList.add(matchDto);
+				 }
+			 }
+		}
+		
+		comparisonDto.setMatches(matchDtoList);
+		System.out.println(comparisonDto);
+		return comparisonDto;
+	}
+	
 	@Override
 	public ComparisonDto getMerge(String left, String right, String origin) throws InvalidParametersException, IOException {
 				

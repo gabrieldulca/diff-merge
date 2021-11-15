@@ -37,6 +37,14 @@ public class DiffManagerService {
 		
 	}
 
+	public ComparisonDto getMergeNoConflicts(String left, String right, String origin, String type, String[] changes) throws InvalidRepresentationException, InvalidParametersException, IOException {
+		if(registeredComponents.containsKey(type)) {
+			return registeredComponents.get(type).getMergeNoConflicts(left, right, origin, changes);
+		} else {
+			throw new InvalidRepresentationException("No registered component for " + type +" found");
+		}
+	}
+
 	public ComparisonDto getMerge(String left, String right, String origin, String type) throws InvalidRepresentationException, InvalidParametersException, IOException {
 		if(registeredComponents.containsKey(type)) {
 			return registeredComponents.get(type).getMerge(left, right, origin);

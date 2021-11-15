@@ -1,7 +1,9 @@
 package main.java.com.diffmerge.controller;
 import java.util.Collections;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -79,6 +81,26 @@ public class DiffController {
 	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
 	    	
 	        return diffManagerService.getMerge(file1, file2, null, type);
+	    }
+	    
+	    @POST
+	    @Path("merge3wnc/{type}")
+	    @Consumes(MediaType.APPLICATION_JSON)
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public ComparisonDto getMergeNoConflicts(@PathParam("type") String type, @QueryParam("base") String base, @QueryParam("file1") String file1, String[] changes) throws Exception {
+	    	
+	    	System.out.println("First file path : " + file1);
+	    	System.out.println("Base file path: " + base);
+	    	if(changes.length > 0) {
+	    		for(String c : changes) {
+	    			System.out.println("\tchange: " + c);
+	    		}
+	    		
+	    	}
+	    	
+	    	DiffManagerService diffManagerService = DiffManagerService.getInstance();
+	    	
+	        return diffManagerService.getMergeNoConflicts(base, file1, null, type, changes);
 	    }
 	    
 	    @GET
